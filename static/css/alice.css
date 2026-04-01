@@ -1,0 +1,88 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Fundo preto paraa começar - a experiência nasce no escuro */
+body {
+    background: #000;
+
+    min-height: 100vh;
+    min-height: 100dvh; /* FIX: alltura real no mobile */
+
+    overflow: hidden;  /* esconde o que sair da tela */
+
+
+}
+
+/* CENA A QUEDA  */
+
+/* Container da cena de queda, ocupa toda a tela */
+.cena-queda {
+    position: fixed;       /* Fica graudado na tela, nãoo rola com scroll */
+    inset: 0;             /* Atalho para top:0, right:0, bottom:0, left:0 */
+    overflow: hidden;    /* esconde o que sair da tela */
+    perspective: 800px; /* Cria profundidade 3D */
+}
+
+
+/* Alice - Posicionada no centro horizontal, começa acima da tela */
+.alice {
+    position: absolute;                 /* Permite mover livremente com top/left */
+    left: 50%;                         /* move o lado esquerdo pro centro da tela */
+    top: -100px;                      /* Começa escondida acima da tela */
+
+    font-family: 'Georgia', serif;  /* Fonte estilo livro antigo */
+    font-size: 80px;               /* Tamanho grande para ser bem visível */
+    color: #f2f2f2;    
+    
+    animation: cairTunel 4s ease-in forwards; /* Aplica animação de queda */
+}
+
+
+/* ANIMAÇÃO: define o movimento de queda do início ao fim */
+@keyframes cairTunel {
+    0% {
+        transform: translate(-50%) scale(1);             /* centralizada, tamanho normal */
+        opacity: 1;                                     /* Totalmente visível */
+    }
+    100% {
+        transform: translate(-50%) scale(0.25);      /* encolhe para 25%, sem rotação */
+        top: 110vh;                                 /* termina abaixo da tela */
+        opacity: 0.6;                              /* Ainda parcialmente visível no final */
+
+    }
+}
+
+
+/* Objetos / posição horizontal para cada um */
+.objeto {
+    position: absolute;  /* Permite mover livremente com top/left */
+    font-size: 32px;    /* Tamanho menor que Alice */
+    top: -80px ;       /* Começa escondido acima da tela */
+    animation: cairObjetoTunel 4s ease-in forwards;  /* mesma duração que Alice */
+
+}
+
+/* Posição horizontal e atraso de cada objeto */
+.objeto-1 { left: 20%; animation-delay: 0.3s; }   /* Aparece 0.3s depois */
+.objeto-2 { left: 35%; animation-delay: 0.6s; }  /* Aparece 0.6s depois */
+.objeto-3 { left: 65%; animation-delay: 0.1s; } /* Aparece 0.1s depois */
+.objeto-4 { left: 78%; animation-delay: 0.5s; }/* Aparece 0.5s depois */
+
+
+/* ANIMAÇÃO dos objetos - caem, encolhem e giram */
+@keyframes cairObjetoTunel {
+    0% {
+        transform: translateY(-80px) scale(1) rotate(0deg); /* Começa acima da tela */
+        opacity: 1;                                        /* Totalmente visível */
+    }    
+    100% {
+        transform: translateY(900px) scale(0.1) rotate(360deg);  /* cai, encolhe para 10%, gira 360°  */
+        opacity: 0.5;                                           /* ainda parcialmente visível no final */
+        
+    }
+}
+
+

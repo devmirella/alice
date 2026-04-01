@@ -1,0 +1,5 @@
+# requiremnts.txt
+# Lista de bibiliotecas externas que o projeto precisa 
+# Para instalar tudo de uma vez: pip install -r requiriments.txt
+
+Flask==3.1.2

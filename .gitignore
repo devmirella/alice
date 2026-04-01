@@ -1,0 +1,18 @@
+# .gitignore
+# Ambiente vitual do Python (bibliotecas instaladas localmente)
+venv/
+
+# Arquivos compilados do Python (gerados automaticamente, não precisamos deles)
+__pycache__/
+*.pyc
+
+# Bnaco de dados local (no Alice não temos, mas irei manter por boa prátca)
+*.db
+
+# Variáveis de ambiente e senhas (nuna subir para o GitHub!)
+.env
+
+# Arquivos do sistema operacional 
+.DS_Store
+thumbs.db
+
