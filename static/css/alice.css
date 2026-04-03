@@ -86,3 +86,34 @@ body {
 }
 
 
+/* Mensagem de despertar */
+#mensagem-despertar {
+    position: fixed;                     /* Fica fixo na tela e não com o conteúdo */
+    top: 50%;                           /* Centraliza verticalmente */
+    left: 50%;                         /* centraliza horizontalmente */
+    transform: translate(-50%, -50%); /* Ajuste de centralização */
+
+    color: rgba(255, 255, 255, 0.5); 
+    font-family: serif;
+    font-size: 1rem;                     /* Tamanho pequeno, sutil */
+    letter-spacing: 0.3em;
+
+    opacity: 0;
+    pointer-events: none;            /* Não captura clique quando invisível */
+
+    transition: opacity 1.5s ease; /* Aparece e some suavemente em 1.5s */
+}
+
+/* Quando o body tem a classe "estado-desmaiada", a mensagem aparece */
+body.estado-desmaiada #mensagem-despertar {
+    opacity: 1;                 /* Torna visível */
+    pointer-events: auto;      /* Agora pode receber cliques */
+
+}
+
+/* Quando o body tem a classe "estado-acordada", a mensagem some */
+body.estado-acordada #mensagem-despertar {
+    opacity: 0;             /* Volta a ser invisível */
+    pointer-events: none;  /* Não captura mais cliques */
+}
+

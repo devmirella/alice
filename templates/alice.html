@@ -10,12 +10,12 @@
 </head>
 <body>
 
-    <!-- Cena 1: A QUEDA -->
+             <!-- Cena 1: A QUEDA -->
     <!-- Essa div engloba tudo que aparece durante a queda -->
     <div class="cena-queda">
 
         <!-- Alice representada pela letra "A" -->
-        <div class="alice">A</div>
+        <div id="alice" class="alice">A</div>
 
         <!-- Objetos caindo junto com Alice, cada um tem uma classe diferente pra cair em ritmo diferente -->
         <div class="objeto objeto-1">🕯️</div>
@@ -25,6 +25,10 @@
 
     </div>
 
+    <!-- Mensagem que aparece quando Alice está desmaiada, pedindo interação -->
+    <div id="mensagem-despertar">
+        Clique para acordar
+    </div>
 
 
     <!-- Conecta o JS, defer faz eke carregar só depois que o HTML estiver pronto -->
