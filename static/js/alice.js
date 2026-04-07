@@ -37,6 +37,43 @@ mensagemDespertar.addEventListener("click", function() {
     }
 })
 
+const escuridao = document.getElementById("escuridao");
+
+// Escuta o movimento de mouse em toda a tela
+document.addEventListener("mousemove", function(evento) {
+
+    if (estado !== "acordada") return;
+
+    const x = evento.clientX;  // distância da esquerda em pixels
+    const y = evento.clientY; // distância do topo em pixels
+
+    escuridao.style.background = `radial-gradient(
+        circle 200px at ${x}px ${y}px,
+        rgba(255, 200, 80, 0.15) 0%,
+        rgba(255, 200, 80, 0.05) 45%,
+        rgba(0,0,0,0.95) 100%
+    )`;
+});
+
+// Escuta o toque na tela "equivalente ao mousemove para celular"
+document.addEventListener("touchmove", function(evento) {
+
+    if(estado !== "acordada") return;
+
+    // touchmove pode ter vários dedos — pegamos só o primeiro
+    const toque = evento.touches[0];
+
+    const x = toque.clientX;
+    const y = toque.clientY;
+
+    escuridao.style.background = `radial-gradient(
+        circle 150px at ${x}px ${y}px,
+        rgba(255, 200, 80, 0.15) 0%,
+        rgba(255, 200, 80, 0.05) 45%,
+        rgba(0,0,0,0.95) 100%
+        )`;
+});
+
 // Interatividade da experiência Alice — por enquanto só um teste
 document.addEventListener( "DOMContentLoaded", () => {
 

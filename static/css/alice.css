@@ -124,7 +124,7 @@ body.estado-acordada #mensagem-despertar {
     opacity: 0;
     pointer-events: none;
     transition: opacity 1.5s ease; /* Aparece suavemente */
-    background: #1a0a2e;
+    background: #0d0a00;
 
 }
 
