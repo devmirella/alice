@@ -39,7 +39,7 @@ mensagemDespertar.addEventListener("click", function() {
 
 const escuridao = document.getElementById("escuridao");
 
-// Escuta o movimento de mouse em toda a tela
+// Mousemove, desktop
 document.addEventListener("mousemove", function(evento) {
 
     if (estado !== "acordada") return;
@@ -55,7 +55,7 @@ document.addEventListener("mousemove", function(evento) {
     )`;
 });
 
-// Escuta o toque na tela "equivalente ao mousemove para celular"
+// touchmove, mobile (raio menor, tela menor)
 document.addEventListener("touchmove", function(evento) {
 
     if(estado !== "acordada") return;
@@ -72,6 +72,50 @@ document.addEventListener("touchmove", function(evento) {
         rgba(255, 200, 80, 0.05) 45%,
         rgba(0,0,0,0.95) 100%
         )`;
+});
+
+
+const RAIO_LUZ = 70; 
+const objetos = document.querySelectorAll(".objeto-ambiente");
+
+// Move a luz e revela os objetos 
+function moverLuz(x, y) {
+
+    escuridao.style.background=`radial-gradient(
+        circle 65px at ${x}px ${y}px,
+        rgba(255, 200, 80, 0.20) 0%,
+        rgba(255, 200, 80, 0.08) 55%,
+        rgba(0, 0, 0, 0.98) 75%
+        )`;
+
+        objetos.forEach(obj => {
+            const rect = obj.getBoundingClientRect();
+
+            // Centro do objeto
+            const ox = rect.left + rect.width / 2;
+            const oy = rect.top  + rect.height / 2;
+
+            // Distância entre cursor e o objeto
+            const dist = Math.sqrt((x - ox) ** 2 + (y - oy) ** 2);
+
+            // Quanto mais perto, mais visível
+            obj.style.opacity = dist < RAIO_LUZ
+                ? (1 - dist / RAIO_LUZ).toFixed(2)
+                : 0;
+        });
+}
+
+// Desktop
+document.addEventListener("mousemove", function(e) {
+    if (estado !== "acordada") return;
+    moverLuz(e.clientX, e.clientY);
+});
+
+// Mobile 
+document.addEventListener("touchmove", function(e) {
+    if (estado !== "acordada") return;
+    const toque = e.touches[0];
+    moverLuz(toque.clientX, toque.clientY);
 });
 
 // Interatividade da experiência Alice — por enquanto só um teste
