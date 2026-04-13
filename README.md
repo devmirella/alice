@@ -19,8 +19,8 @@ Alice é um projeto de narrativa interativa onde cada clique revela um novo mome
 | 0 | Setup do projeto | ✅ |
 | 1 | A Queda | ✅ |
 | 2 | Tela escura + interação | ✅ |
-| 3 | Efeito de lanterna | 🔨 em breve |
-| 4 | Sons ambiente | 🔨 em breve |
+| 3 | Efeito de lanterna | ✅ |
+| 4 | Sons ambiente | ✅ |
 | 5 | A Porta | 🔨 em breve |
 | 6 | O Buraco da Fechadura | 🔨 em breve |
 | 7 | Deploy | 🔨 em breve |
@@ -29,9 +29,10 @@ Alice é um projeto de narrativa interativa onde cada clique revela um novo mome
 
 ## 🛠 Tecnologias
 
-- HTML, CSS, JavaScript — sem frameworks
-- Flask (Python), servidor local
-- Deploy: PythonAnywhere
+* HTML, CSS, JavaScript (sem frameworks)
+* Flask (Python): servidor local
+* Web Audio API (sons gerados por código, sem arquivos externos)
+* Deploy: PythonAnywhere
 
 ---
 
