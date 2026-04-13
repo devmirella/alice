@@ -4,12 +4,12 @@
     box-sizing: border-box;
 }
 
-/* Fundo preto paraa começar - a experiência nasce no escuro */
+/* Fundo preto para começar, a experiência nasce no escuro */
 body {
     background: #000;
 
     min-height: 100vh;
-    min-height: 100dvh; /* FIX: alltura real no mobile */
+    min-height: 100dvh; /* FIX: altura real no mobile */
 
     overflow: hidden;  /* esconde o que sair da tela */
 
@@ -18,16 +18,16 @@ body {
 
 /* CENA A QUEDA  */
 
-/* Container da cena de queda, ocupa toda a tela */
+/* Container da cena de queda: ocupa toda a tela */
 .cena-queda {
-    position: fixed;       /* Fica graudado na tela, nãoo rola com scroll */
-    inset: 0;             /* Atalho para top:0, right:0, bottom:0, left:0 */
-    overflow: hidden;    /* esconde o que sair da tela */
-    perspective: 800px; /* Cria profundidade 3D */
+    position: fixed;       /* Não rola com scroll */
+    inset: 0;             /* Atalho para top, right, bottom, left:0 */
+    overflow: hidden;    /* Corta o que sair da tela */
+    perspective: 800px; /* Cria profundidade 3D  para animações */
 }
 
 
-/* Alice - Posicionada no centro horizontal, começa acima da tela */
+/* Alice: Posicionada no centro horizontal, começa acima da tela */
 .alice {
     position: absolute;                 /* Permite mover livremente com top/left */
     left: 50%;                         /* move o lado esquerdo pro centro da tela */
@@ -56,7 +56,7 @@ body {
 }
 
 
-/* Objetos / posição horizontal para cada um */
+/* Objetos: posição horizontal para cada um */
 .objeto {
     position: absolute;  /* Permite mover livremente com top/left */
     font-size: 32px;    /* Tamanho menor que Alice */
@@ -72,7 +72,7 @@ body {
 .objeto-4 { left: 78%; animation-delay: 0.5s; }/* Aparece 0.5s depois */
 
 
-/* ANIMAÇÃO dos objetos - caem, encolhem e giram */
+/* ANIMAÇÃO dos objetos: caem, encolhem e giram */
 @keyframes cairObjetoTunel {
     0% {
         transform: translateY(-80px) scale(1) rotate(0deg); /* Começa acima da tela */
@@ -117,7 +117,7 @@ body.estado-acordada #mensagem-despertar {
     pointer-events: none;  /* Não captura mais cliques */
 }
 
-/* Cena da lanterna, começa invisível */
+/* Cena da lanterna: começa invisível */
 #cena-lanterna {
     position: fixed; 
     inset: 0;                        /* Ocupa toda a tela */
@@ -128,14 +128,14 @@ body.estado-acordada #mensagem-despertar {
 
 }
 
-/* Cena da lanterna, visivél */
+/* Cena da lanterna: visivél */
 body.estado-acordada #cena-lanterna {
     opacity: 1;            
     pointer-events: auto;    /* Passa a capturar o mouse */
 
 }
 
-/* A camada da escuridão que cobre tudo, o buraco de luz fica aqui */
+/* A camada da escuridão: cobre tudo, o buraco de luz fica aqui */
 #escuridao {
     position: fixed;
     inset: 0;   
@@ -144,7 +144,7 @@ body.estado-acordada #cena-lanterna {
     background: radial-gradient(
         circle 120px at 50% 50%,
         rgba(255, 200, 80, 0.45) 0%,
-        rgba(255, 200, 80, 0.15) 40%,
+        rgba(255, 200, 80, 0.15) 45%,
         rgba(0, 0, 0, 0.97) 75%
     );
 }
@@ -157,4 +157,33 @@ body.estado-acordada #cena-lanterna {
     transition: opacity 0.3s ease;
     pointer-events: none;
     user-select: none;   /* não seleciona o emoji por acidente */
+}
+
+/* Botão discreto no canto inferior direito */
+#btn-mute {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0; /* Começa invisível */
+    pointer-events: none;
+    transition: opacity 1.5s ease;
+    z-index: 100;
+}
+
+
+/* Aparece junto com a cena da lanterna */
+body.estado-acordada #btn-mute {
+    opacity: 0.5;
+    pointer-events: auto;
+}
+
+
+/* Hover: fica mais visivel ao passar o volume */
+#btn-mute:hover {
+    opacity: 1;
 }
