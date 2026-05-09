@@ -1,18 +1,30 @@
-// Controla o que esta acontecendo na tela 
+
 let estado = "caindo";
+let progresso = 0;
+
+
+const PASSO = 0.05; // 5% do caminho por tecla
+
+// Escala da porta: começa grande (3x) e vai para 1x conforme Alice avança
+const ESCALA_PORTA_LONGE = 4;
+const ESCALA_PORTA_PERTO = 0.8;
+
+let swipeStartY = null; // Swipe: guarda o Y do início do toque
 
 // Quando o estado muda, essa função é chamada para atualizar a página 
 function mudarEstado(novoEstado) {
     estado = novoEstado;
 
     // Remove todas as classes do body primeiro (limpa o estado anterior)
-    document.body.classList.remove("estado-caindo", "estado-desmaiada", "estado-acordada");
+    document.body.classList.remove("estado-caindo", "estado-desmaiada", "estado-acordada",  "estado-porta", "estado-fechadura");
 
     document.body.classList.add("estado-" + novoEstado);
 
     console.log("Estado mudou para:", novoEstado); // Ajuda a deburgar no console
 
 }
+          
+// _____CENA 1: A QUEDA 
 
 // Pega o elemento da Alice no HTML
 const alice = document.getElementById("alice");
@@ -26,6 +38,8 @@ alice.addEventListener("animationend", function(evento) {
     }
 })
 
+// _____CENA 2: ACORDAR_____
+
 // Pega a mensagem de despertar
 const mensagemDespertar = document.getElementById("mensagem-despertar");
 
@@ -36,16 +50,19 @@ mensagemDespertar.addEventListener("click", function() {
         mudarEstado("acordada");
         iniciarSons(); 
     }
-})
+});
 
 
-const escuridao = document.getElementById("escuridao");
+// ____CENA 3: LANTERNA_____
 
-const objetos = document.querySelectorAll(".objeto-ambiente");
+const escuridao      = document.getElementById("escuridao");
+const objetos        = document.querySelectorAll(".objeto-ambiente");
+const aliceLanterna  = document.getElementById("alice-lanterna");
+const porta          = document.getElementById("porta");
 
-const RAIO_LUZ = 120; 
+const RAIO_LUZ   = 120;  // raio do círculo de luz em pixels
 
-// Move a luz e revela os objetos 
+// ____Move a luz e revela os objetos próximos______
 function moverLuz(x, y) {
 
     escuridao.style.background=`radial-gradient(
@@ -56,44 +73,138 @@ function moverLuz(x, y) {
         )`;
 
         objetos.forEach(obj => {
+
             const rect = obj.getBoundingClientRect();
 
-            // Centro do objeto
-            const ox = rect.left + rect.width / 2;
-            const oy = rect.top  + rect.height / 2;
+            const ox = rect.left + rect.width / 2;    // centro horizontal do objeto
+            const oy = rect.top  + rect.height / 2;  // centro vertical do objeto
 
-            // Distância entre cursor e o objeto
-            const dist = Math.sqrt((x - ox) ** 2 + (y - oy) ** 2);
+            const dist = Math.sqrt((x - ox) ** 2 + (y - oy) ** 2); // distância até a luz
 
             // Quanto mais perto, mais visível
             obj.style.opacity = dist < RAIO_LUZ
                 ? (1 - dist / RAIO_LUZ).toFixed(2)
                 : 0;
         });
+
+        // ALICE é relevada separadamente, não é .objeto-ambiente
+        const rectAlice = aliceLanterna.getBoundingClientRect();
+        const ax        = rectAlice.left + rectAlice.width / 2;
+        const ay        = rectAlice.top + rectAlice.height / 2;
+        const distAlice = Math.sqrt((x - ax) ** 2 + (y - ay) ** 2);
+
+        aliceLanterna.style.opacity = distAlice < RAIO_LUZ
+        ? (1 - distAlice / RAIO_LUZ).toFixed(2)
+        : 0;
 }
 
-// Desktop
+// ________Desktop_________
 document.addEventListener("mousemove", function(e) {
     if (estado !== "acordada") return;
     moverLuz(e.clientX, e.clientY);
 });
 
-// Mobile 
+// _______Mobile_________
 document.addEventListener("touchmove", function(e) {
     if (estado !== "acordada") return;
+    e.preventDefault();
     const toque = e.touches[0];
     moverLuz(toque.clientX, toque.clientY);
+}, { passive: false});
+
+// ___CAMINHADA DE ALICE______
+function atualizarCaminhada() {
+
+    // Porta encolhe conforme Alice avança (magia do País das Maravilhas)
+    const escalaPorta = ESCALA_PORTA_LONGE - (ESCALA_PORTA_LONGE - ESCALA_PORTA_PERTO) * progresso;
+
+    // Porta desce levemente na tela conforme Alice se aproxima
+    const topPorta = 20 + (45 - 20) * progresso; // de 20% até 45% do topo
+
+    // Aplica só translateX porque o top é controlado separadamente
+    porta.style.transform = `translateX(-50%) scale(${escalaPorta.toFixed(3)})`;
+    porta.style.top = topPorta + "%";
+
+    const topAlice = 90 - (90 - 60) * progresso;
+    aliceLanterna.style.top = topAlice + "%";
+
+    // Quando Alice está 90% do caminho, habilita a maçaneta
+    if (progresso >= 0.9 && !porta.classList.contains("chegou")) {
+        porta.classList.add("chegou");
+        console.log("Alice chegou perto da porta!");
+    }
+}
+
+// Avança Alice um passo em direção à porta
+function darPasso() {
+    if (estado !== "acordada") return;
+    if (progresso >= 1) return; 
+
+    progresso = Math.min(progresso + PASSO, 1);
+    aliceLanterna.classList.add("andando"); // Animação de caminhada nas pernas
+
+    clearTimeout(aliceLanterna._andandoTimeout);
+    aliceLanterna._andandoTimeout = setTimeout(() => {
+        aliceLanterna.classList.remove("andando");
+    }, 400);
+    atualizarCaminhada();
+}       
+// Desktop
+document.addEventListener("keydown", function(e) {
+    if (e.key == "ArrowUp") {
+        e.preventDefault();
+        darPasso();
+    }
 });
 
-// SONS
+// ____Mobile: swipe para cima faz Alice andar____
+document.addEventListener("touchstart", function(e) {
+    if (estado !== "acordada") return;
+    swipeStartY = e.touches[0].clientY; // Guarda onde o toque começou
+}, {passive: true});
 
+document.addEventListener("touchend", function(e) {
+    if (estado !== "acordada") return;
+    if (swipeStartY === null) return;
+
+    const swipeEndY = e.changedTouches[0].clientY;
+    const deltaY = swipeStartY - swipeEndY;
+
+    if (deltaY > 30) {
+        darPasso();
+    }
+    swipeStartY = null 
+
+}, { passive: true });
+
+
+// _____CENA 3 -> 4: MAÇANETA_____
+const machaneta = document.getElementById("porta-machaneta");
+
+machaneta.addEventListener("click", function() {
+    if (estado !== "acordada") return; 
+    if (progresso < 0.9) return; // Só funciona quando Alice está perto
+
+    aliceLanterna.style.opacity = "0";
+    aliceLanterna.style.transition = "opacity 0.1s ease"; // Some muito rápido
+
+    // Alice some instantaneamente
+    mudarEstado("porta");
+
+    setTimeout(() => {
+        mudarEstado("fechadura");
+    }, 800); // Alice sumiu na porta
+});
+
+
+// ____SONS_________
 let audioCtx = null;
 let mutado = false;
 let volumeGeral = null;
 
+// Inicializa o contexto de áudio após interação do usuário 
 function iniciarSons() {
-
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     volumeGeral = audioCtx.createGain();
     volumeGeral.gain.value = 1;
@@ -105,7 +216,7 @@ function iniciarSons() {
     }, 10000);
 }
 
-// Camada 1: Gotas
+// ____________Camada 1: Gotas_______
 function tocarGotas() {
 
     function agendarPingo() {
@@ -143,7 +254,7 @@ function criarPingo() {
 
 }
 
-// Camada 2: Barulho misterioso
+// _____Camada 2: Barulho misterioso___
 function tocarBarulhoMisterioso() {
 
     let intensidade = 0.03;
@@ -202,7 +313,7 @@ function criarBarulho(volume) {
     fonte.stop(audioCtx.currentTime + 1.5);
 }
 
-// Botão de mute 
+// _____Botão de mute____________
 const btnMute = document.getElementById("btn-mute");
 btnMute.addEventListener("click", function() {
     mutado = !mutado;
@@ -218,7 +329,7 @@ btnMute.addEventListener("click", function() {
 
 // Interatividade da experiência Alice — por enquanto só um teste
 document.addEventListener( "DOMContentLoaded", () => {
-
+    atualizarCaminhada();
     console.log("Alice acordou!");
 
 });

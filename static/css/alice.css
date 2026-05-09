@@ -9,18 +9,16 @@ body {
     background: #000;
 
     min-height: 100vh;
-    min-height: 100dvh; /* FIX: altura real no mobile */
+    min-height: 100dvh;  /* FIX: altura real no mobile */
 
-    overflow: hidden;  /* esconde o que sair da tela */
-
-
+    overflow: hidden;  /* Esconde o que sair da tela */
 }
 
-/* CENA A QUEDA  */
+                  /* CENA 1: A QUEDA  */
 
 /* Container da cena de queda: ocupa toda a tela */
 .cena-queda {
-    position: fixed;       /* Não rola com scroll */
+    position: fixed;     
     inset: 0;             /* Atalho para top, right, bottom, left:0 */
     overflow: hidden;    /* Corta o que sair da tela */
     perspective: 800px; /* Cria profundidade 3D  para animações */
@@ -30,33 +28,32 @@ body {
 /* Alice: Posicionada no centro horizontal, começa acima da tela */
 .alice {
     position: absolute;                 /* Permite mover livremente com top/left */
-    left: 50%;                         /* move o lado esquerdo pro centro da tela */
+    left: 50%;                        
     top: -100px;                      /* Começa escondida acima da tela */
 
     font-family: 'Georgia', serif;  /* Fonte estilo livro antigo */
-    font-size: 80px;               /* Tamanho grande para ser bem visível */
+    font-size: 80px;            
     color: #f2f2f2;    
     
     animation: cairTunel 4s ease-in forwards; /* Aplica animação de queda */
 }
 
 
-/* ANIMAÇÃO: define o movimento de queda do início ao fim */
+/* ANIMAÇÃO de queda: define o movimento de queda do início ao fim */
 @keyframes cairTunel {
     0% {
         transform: translate(-50%) scale(1);             /* centralizada, tamanho normal */
-        opacity: 1;                                     /* Totalmente visível */
+        opacity: 1;                                     
     }
     100% {
-        transform: translate(-50%) scale(0.25);      /* encolhe para 25%, sem rotação */
+        transform: translate(-50%) scale(0.25);      /* encolhe para 25% */
         top: 110vh;                                 /* termina abaixo da tela */
-        opacity: 0.6;                              /* Ainda parcialmente visível no final */
-
+        opacity: 0.6;                             
     }
 }
 
 
-/* Objetos: posição horizontal para cada um */
+/* Objetos da queda: posição horizontal para cada um */
 .objeto {
     position: absolute;  /* Permite mover livremente com top/left */
     font-size: 32px;    /* Tamanho menor que Alice */
@@ -65,18 +62,18 @@ body {
 
 }
 
-/* Posição horizontal e atraso de cada objeto */
+/* Obejtos da queda: Posição horizontal e atraso de cada objeto */
 .objeto-1 { left: 20%; animation-delay: 0.3s; }   /* Aparece 0.3s depois */
 .objeto-2 { left: 35%; animation-delay: 0.6s; }  /* Aparece 0.6s depois */
 .objeto-3 { left: 65%; animation-delay: 0.1s; } /* Aparece 0.1s depois */
 .objeto-4 { left: 78%; animation-delay: 0.5s; }/* Aparece 0.5s depois */
 
 
-/* ANIMAÇÃO dos objetos: caem, encolhem e giram */
+/* ANIMAÇÃO dos objetos: caem, encolhem e giram 360° */
 @keyframes cairObjetoTunel {
     0% {
-        transform: translateY(-80px) scale(1) rotate(0deg); /* Começa acima da tela */
-        opacity: 1;                                        /* Totalmente visível */
+        transform: translateY(-80px) scale(1) rotate(0deg);  /* Começa acima da tela */
+        opacity: 1;                                         /* Totalmente visível */
     }    
     100% {
         transform: translateY(900px) scale(0.1) rotate(360deg);  /* cai, encolhe para 10%, gira 360°  */
@@ -84,37 +81,39 @@ body {
         
     }
 }
-
+            /* CENA 2: ACORDAR */
 
 /* Mensagem de despertar */
 #mensagem-despertar {
-    position: fixed;                     /* Fica fixo na tela e não com o conteúdo */
-    top: 50%;                           /* Centraliza verticalmente */
-    left: 50%;                         /* centraliza horizontalmente */
-    transform: translate(-50%, -50%); /* Ajuste de centralização */
+    position: fixed;                   
+    top: 50%;                          
+    left: 50%;                        
+    transform: translate(-50%, -50%);        /* Ajuste de centralização */
 
     color: rgba(255, 255, 255, 0.5); 
     font-family: serif;
-    font-size: 1rem;                     /* Tamanho pequeno, sutil */
+    font-size: 1rem;                      /* Tamanho pequeno, sutil */
     letter-spacing: 0.3em;
 
     opacity: 0;
-    pointer-events: none;            /* Não captura clique quando invisível */
+    pointer-events: none;              /* Não captura clique quando invisível */
 
-    transition: opacity 1.5s ease; /* Aparece e some suavemente em 1.5s */
+    transition: opacity 1.5s ease;   /* Aparece e some suavemente em 1.5s */
 }
 
-/* Quando o body tem a classe "estado-desmaiada", a mensagem aparece */
+/* Mensagem aparece quando desmaiada */
 body.estado-desmaiada #mensagem-despertar {
     opacity: 1;                 /* Torna visível */
     pointer-events: auto;      /* Agora pode receber cliques */
 
 }
 
-/* Quando o body tem a classe "estado-acordada", a mensagem some */
-body.estado-acordada #mensagem-despertar {
-    opacity: 0;             /* Volta a ser invisível */
-    pointer-events: none;  /* Não captura mais cliques */
+/* Some quando acordada */
+body.estado-acordada #mensagem-despertar,
+body.estado-porta #mensagem-despertar,
+body.estado-fechadura #mensagem-despertar {
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* Cena da lanterna: começa invisível */
@@ -135,11 +134,12 @@ body.estado-acordada #cena-lanterna {
 
 }
 
-/* A camada da escuridão: cobre tudo, o buraco de luz fica aqui */
+/* Camada de escuridão com o buraco de luz */
 #escuridao {
     position: fixed;
     inset: 0;   
     height: 100vh;
+    pointer-events: none;
 
     background: radial-gradient(
         circle 120px at 50% 50%,
@@ -159,12 +159,233 @@ body.estado-acordada #cena-lanterna {
     user-select: none;   /* não seleciona o emoji por acidente */
 }
 
-/* Botão discreto no canto inferior direito */
+            /* ALICE NA TOCA */
+ 
+/* Alice: posicionada no centro da tela, na frente */
+/* A lanterna a revela quando a luz chega perto */
+#alice-lanterna {
+    position: absolute;
+    left: 50%;
+    top: 60%;                          /* começa no meio/baixo da tela */
+    transform: translate(-50%, -50%); /* centraliza pelos dois eixos */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 2;
+}
+ 
+/* Corpo de Alice: placeholder com a letra A */
+#alice-corpo {
+    font-family: 'Georgia', serif;
+    font-size: 3rem;                
+    color: #f2e8d5;              
+    line-height: 1;
+    transition: transform 0.3s ease; /* suaviza a animação de passo */
+}
+ 
+/* Pernas de Alice */
+#alice-pernas {
+    display: flex;
+    gap: 8px;           /* espaço entre as pernas */
+    margin-top: 4px;
+}
+ 
+/* Cada perna: retângulo simples como placeholder */
+.perna {
+    width: 14px;
+    height: 40px;
+    background: #f2e8d5;           /* mesma cor do corpo */
+    border-radius: 4px 4px 6px 6px; 
+}
+ 
+/* ANIMAÇÃO de caminhada: as pernas alternam */
+@keyframes andarPerna {
+    0%, 100% { transform: translateY(0);   }   /* posição normal */
+    50%      { transform: translateY(-8px); } /* levanta a perna */
+}
+ 
+/* Quando Alice está andando, as pernas animam em ritmos opostos */
+#alice-lanterna.andando #perna-esq {
+    animation: andarPerna 0.4s ease-in-out infinite;            /* perna esquerda */
+}
+#alice-lanterna.andando #perna-dir {
+    animation: andarPerna 0.4s ease-in-out infinite 0.2s;     /* perna direita — 0.2s atrasada */
+}
+ 
+                /* A PORTA */
+
+/* A porta: começa grande ao fundo (distante) */
+/* A escala começa em 3x e vai encolhendo via JS conforme Alice avança */                
+#porta {
+    position: absolute;
+    left: 50%;
+    top: 20%;                          /* começa ao fundo (topo da tela) */
+    transform: translateX(-50%);      /* só centraliza — escala é controlada pelo JS */
+    pointer-events: auto;
+    transition: opacity 0.3s ease;
+}
+
+/* Quando Alice chega perto (JS adiciona classe "chegou"), porta recebe clique na maçaneta */
+#porta.chegou {
+    pointer-events: none;    /* desativa clique na porta inteira */
+}
+
+/* Porta fica invisível e não clicável antes de Alice acordar */
+body.estado-caindo #porta,
+body.estado-desmaiada #porta {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Moldura da porta: retângulo com arco gótico dourado */
+#porta-moldura {
+    width: 60px;                                        /* largura da porta */
+    height: 100px;                                     /* altura da porta */
+    border: 3px solid rgba(180, 140, 80, 0.9);      /* borda cor dourado envelhecido */
+    border-radius: 30px 30px 4px 4px;                /* arredonda só o topo — arco gótico */
+    background: #1a0e00;                          /* interior escuro */
+    position: relative;                            /* referência para a maçaneta */
+ 
+    box-shadow:
+        0 0 12px rgba(180, 140, 80, 0.3),      /* brilho externo suave */
+        inset 0 0 8px rgba(0, 0, 0, 0.8);     /* sombra interna que dá profundidade */
+}
+ 
+/* Painel interno decorativo */
+#porta-painel {
+    position: relative;
+    top: 12px;
+    left: 8px;
+    right: 8px;
+    bottom: 12px;
+    border: 1px solid rgba(180, 140, 80, 0.35);
+    border-radius: 22px 22px 2px 2px;
+}
+
+/* Maçaneta: Clique acontece aqui */
+#porta-machaneta {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: rgba(200, 160, 80, 0.9);
+    border-radius: 50%;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 0 6px rgba(200, 160, 80, 0.6); 
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 10;
+}
+
+/* Hover na maçaneta: Brilha mais */
+#porta-machaneta:hover {
+    box-shadow: 0 0 14px rgba(200, 160, 80, 1);
+    background: rgba(220, 180, 100, 1);
+}
+
+/* Moldura brilha */
+#porta:hover #porta-moldura {
+    box-shadow: 
+        0 0 20px rgba(180,140,80,0.6),
+        inset 0 0 8px rgba(0,0,0,0.8);
+}
+
+/* Quando o estado muda para "porta": Alice sumiu, porta some junto */
+body.estado-porta #porta {
+    opacity: 0;                              
+    transition: opacity 0.3s ease;
+    pointer-events: none;                  
+}
+
+            /* CENA 4: FECHADURA */
+
+#cena-fechadura {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.5s ease;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}        
+
+body.estado-fechadura #cena-fechadura {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Interior da fechadura: Pais das maravilhas */
+#fechadura-interior {
+    position: absolute;
+    width: 90px;
+    height: 130px;
+
+    background: radial-gradient(ellipse at center, rgba(180,230,120,0.9) 0%,  rgba(100, 180,60,0.7) 40%, rgba(20,60,10,0.9) 100% );
+    /* Formato da fechadura usando "clip-path" */
+    clip-path: path('M 45 0 A 45 45 0 1 1 44.9 0 Z M 20 90 L 70 90 L 65 130 L 25 130 Z');
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+#fechadura-mascara {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    width: 90px;
+    height: 130px;
+    position: relative;
+
+    box-shadow: 0 0 0 100vmax #000;
+    clip-path: path('M 45 0 A 45 45 0 1 1 44.9 0 Z M 20 90 L 70 90 L 65 130 L 25 130 Z');
+    background: transparent;
+}
+
+#fechadura-texto {
+    font-size: 2rem;
+    color: rgba(255, 255, 200, 0.8);
+    animation: brilharFechadura 3s ease-in-out infinite;
+    user-select: none;
+}
+
+@keyframes brilharFechadura {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50%      { opacity: 1;   transform: scale(1.1); }
+
+    }
+
+#creditos {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translate(-50%);
+    color: rgba(255, 255, 255, 0.25);
+    font-family: serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    opacity: 0;
+    transition: opacity 2s ease 1s;
+}
+
+body.estado-fechadura #creditos {
+    opacity: 1;
+}
+
+        /* BOTÃO DE MUTE */
+
+
 #btn-mute {
     position: fixed;
-    bottom: 1.5rem;
+    bottom: 1.5rem; 
     right: 1.5rem;
-
     background: none;
     border: none;
     font-size: 1.2rem;
@@ -176,8 +397,9 @@ body.estado-acordada #cena-lanterna {
 }
 
 
-/* Aparece junto com a cena da lanterna */
-body.estado-acordada #btn-mute {
+body.estado-acordada #btn-mute,
+body.estado-porta #btn-mute,
+body.estado-fechadura #btn-mute {
     opacity: 0.5;
     pointer-events: auto;
 }
