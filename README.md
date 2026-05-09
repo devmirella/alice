@@ -21,7 +21,7 @@ Alice é um projeto de narrativa interativa onde cada clique revela um novo mome
 | 2 | Tela escura + interação | ✅ |
 | 3 | Efeito de lanterna | ✅ |
 | 4 | Sons ambiente | ✅ |
-| 5 | A Porta | 🔨 em breve |
+| 5 | A Porta | ✅ |
 | 6 | O Buraco da Fechadura | 🔨 em breve |
 | 7 | Deploy | 🔨 em breve |
 
