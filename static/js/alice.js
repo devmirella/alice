@@ -66,16 +66,15 @@ const RAIO_LUZ   = 120;  // raio do círculo de luz em pixels
 function moverLuz(x, y) {
 
     escuridao.style.background=`radial-gradient(
-        circle 120px at ${x}px ${y}px,
-        rgba(255, 200, 80, 0.20) 0%,
-        rgba(255, 200, 80, 0.08) 40%,
+        circle 115px at ${x}px ${y}px,
+        rgba(255, 255, 80, 0.20) 2%,
+        rgba(255, 200, 80, 0.08) 35%,
         rgba(0, 0, 0, 0.98) 75%
         )`;
 
         objetos.forEach(obj => {
 
             const rect = obj.getBoundingClientRect();
-
             const ox = rect.left + rect.width / 2;    // centro horizontal do objeto
             const oy = rect.top  + rect.height / 2;  // centro vertical do objeto
 
@@ -88,14 +87,17 @@ function moverLuz(x, y) {
         });
 
         // ALICE é relevada separadamente, não é .objeto-ambiente
-        const rectAlice = aliceLanterna.getBoundingClientRect();
-        const ax        = rectAlice.left + rectAlice.width / 2;
-        const ay        = rectAlice.top + rectAlice.height / 2;
-        const distAlice = Math.sqrt((x - ax) ** 2 + (y - ay) ** 2);
+        const alturaTela     = window.innerHeight;
+        const limiarAparecer = alturaTela * 0.65;
+        const zonaAlice      = alturaTela - limiarAparecer;
 
-        aliceLanterna.style.opacity = distAlice < RAIO_LUZ
-        ? (1 - distAlice / RAIO_LUZ).toFixed(2)
-        : 0;
+        if (y > limiarAparecer) {
+            // Quanto mais baixo o mouse, mais visível Alice fica
+            const opacidade = (y - limiarAparecer) / zonaAlice;
+            aliceLanterna.style.opacity = opacidade.toFixed(2);
+        } else {
+            aliceLanterna.style.opacity = 0; // Some quando a lanterna sobe
+        }
 }
 
 // ________Desktop_________
@@ -222,7 +224,7 @@ document.addEventListener("mousemove", function(e) {
     const mx = -dx * 12;
     const my = -dy * 12;
 
-    fechaduraInterior.style.transform = `translate(${mx}px, ${my}py)`;
+    fechaduraInterior.style.transform = `translate(${mx}px, ${my}px)`;
 
 });
 
@@ -240,7 +242,7 @@ document.addEventListener("touchmove", function(e) {
     const mx = -dx * 12;
     const my = -dy * 12;
 
-    fechaduraInterior.style.transform = `translate(${mx}px, ${my}py)`;
+    fechaduraInterior.style.transform = `translate(${mx}px, ${my}px)`;
 }, {passive: true});
 
 
