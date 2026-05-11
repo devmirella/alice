@@ -99,12 +99,14 @@ function moverLuz(x, y) {
 }
 
 // ________Desktop_________
+
 document.addEventListener("mousemove", function(e) {
     if (estado !== "acordada") return;
     moverLuz(e.clientX, e.clientY);
 });
 
 // _______Mobile_________
+
 document.addEventListener("touchmove", function(e) {
     if (estado !== "acordada") return;
     e.preventDefault();
@@ -112,7 +114,9 @@ document.addEventListener("touchmove", function(e) {
     moverLuz(toque.clientX, toque.clientY);
 }, { passive: false});
 
+
 // ___CAMINHADA DE ALICE______
+
 function atualizarCaminhada() {
 
     // Porta encolhe conforme Alice avança (magia do País das Maravilhas)
@@ -125,7 +129,7 @@ function atualizarCaminhada() {
     porta.style.transform = `translateX(-50%) scale(${escalaPorta.toFixed(3)})`;
     porta.style.top = topPorta + "%";
 
-    const topAlice = 90 - (90 - 60) * progresso;
+    const topAlice = 90 - (90 - 55) * progresso;
     aliceLanterna.style.top = topAlice + "%";
 
     // Quando Alice está 90% do caminho, habilita a maçaneta
@@ -157,7 +161,7 @@ document.addEventListener("keydown", function(e) {
     }
 });
 
-// ____Mobile: swipe para cima faz Alice andar____
+// Mobile: swipe para cima faz Alice andar
 document.addEventListener("touchstart", function(e) {
     if (estado !== "acordada") return;
     swipeStartY = e.touches[0].clientY; // Guarda onde o toque começou
@@ -179,6 +183,7 @@ document.addEventListener("touchend", function(e) {
 
 
 // _____CENA 3 -> 4: MAÇANETA_____
+
 const machaneta = document.getElementById("porta-machaneta");
 
 machaneta.addEventListener("click", function() {
@@ -197,7 +202,50 @@ machaneta.addEventListener("click", function() {
 });
 
 
+//_______CENA 4: EFEITO ESPREITAR____
+
+const fechaduraInterior = document.getElementById("fechadura-interior");
+
+// Mouse se move, interior da fechadura desliza na direção oposta
+document.addEventListener("mousemove", function(e) {
+    if (estado !== "fechadura") return;
+
+    // Centro da tela 
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+
+    // Distância do mouse até o centro (normalizada: -1 a 1)
+    const dx = (e.clientX - cx) / cx;
+    const dy = (e.clientY - cy) / cy;
+
+    // Move o interior na direção oposta ao mouse, máximo 40px
+    const mx = -dx * 12;
+    const my = -dy * 12;
+
+    fechaduraInterior.style.transform = `translate(${mx}px, ${my}py)`;
+
+});
+
+// Mobile: toque move o interior da fechadura
+document.addEventListener("touchmove", function(e) {
+    if (estado !== "fechadura") return;
+
+    const toque = e.touches[0];
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+
+    const dx = (toque.clientX - cx) / cx;
+    const dy = (toque.clientY - cy) / cy;
+
+    const mx = -dx * 12;
+    const my = -dy * 12;
+
+    fechaduraInterior.style.transform = `translate(${mx}px, ${my}py)`;
+}, {passive: true});
+
+
 // ____SONS_________
+
 let audioCtx = null;
 let mutado = false;
 let volumeGeral = null;
@@ -217,6 +265,7 @@ function iniciarSons() {
 }
 
 // ____________Camada 1: Gotas_______
+
 function tocarGotas() {
 
     function agendarPingo() {
@@ -255,6 +304,7 @@ function criarPingo() {
 }
 
 // _____Camada 2: Barulho misterioso___
+
 function tocarBarulhoMisterioso() {
 
     let intensidade = 0.03;
@@ -314,6 +364,7 @@ function criarBarulho(volume) {
 }
 
 // _____Botão de mute____________
+
 const btnMute = document.getElementById("btn-mute");
 btnMute.addEventListener("click", function() {
     mutado = !mutado;

@@ -1,4 +1,4 @@
-# app.py - Arquivo principal do projeto, inicializa o Flasj e define as rotas
+# app.py - Arquivo principal do projeto, inicializa o Flask e define as rotas
 # Importa a classe Flask e a função render_template
 from flask import Flask, render_template
 
