@@ -9,7 +9,7 @@ const PASSO = 0.05; // 5% do caminho por tecla
 const ESCALA_PORTA_LONGE = 4;
 const ESCALA_PORTA_PERTO = 0.8;
 
-let swipeStartY = null; // Swipe: guarda o Y do início do toque
+
 
 // Quando o estado muda, essa função é chamada para atualizar a página 
 function mudarEstado(novoEstado) {
@@ -131,8 +131,6 @@ function atualizarCaminhada() {
     porta.style.transform = `translateX(-50%) scale(${escalaPorta.toFixed(3)})`;
     porta.style.top = topPorta + "%";
 
-    const topAlice = 90 - (90 - 55) * progresso;
-    aliceLanterna.style.top = topAlice + "%";
 
     // Quando Alice está 90% do caminho, habilita a maçaneta
     if (progresso >= 0.9 && !porta.classList.contains("chegou")) {
@@ -140,22 +138,16 @@ function atualizarCaminhada() {
         console.log("Alice chegou perto da porta!");
     }
 }
-
-// Avança Alice um passo em direção à porta
+// Avança Alice um passo em direção à porta (porta encolhe, Alice não se move)
 function darPasso() {
     if (estado !== "acordada") return;
-    if (progresso >= 1) return; 
+    if (progresso >= 1) return;
 
     progresso = Math.min(progresso + PASSO, 1);
-    aliceLanterna.classList.add("andando"); // Animação de caminhada nas pernas
-
-    clearTimeout(aliceLanterna._andandoTimeout);
-    aliceLanterna._andandoTimeout = setTimeout(() => {
-        aliceLanterna.classList.remove("andando");
-    }, 400);
     atualizarCaminhada();
-}       
-// Desktop
+}
+
+// Desktop: seta para cima faz a porta encolher
 document.addEventListener("keydown", function(e) {
     if (e.key == "ArrowUp") {
         e.preventDefault();
@@ -163,11 +155,13 @@ document.addEventListener("keydown", function(e) {
     }
 });
 
-// Mobile: swipe para cima faz Alice andar
+// Mobile: swipe para cima faz a porta encolher
+let swipeStartY = null;
+
 document.addEventListener("touchstart", function(e) {
     if (estado !== "acordada") return;
-    swipeStartY = e.touches[0].clientY; // Guarda onde o toque começou
-}, {passive: true});
+    swipeStartY = e.touches[0].clientY;
+}, { passive: true });
 
 document.addEventListener("touchend", function(e) {
     if (estado !== "acordada") return;
@@ -179,10 +173,8 @@ document.addEventListener("touchend", function(e) {
     if (deltaY > 30) {
         darPasso();
     }
-    swipeStartY = null 
-
+    swipeStartY = null;
 }, { passive: true });
-
 
 // _____CENA 3 -> 4: MAÇANETA_____
 

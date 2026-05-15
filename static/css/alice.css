@@ -161,58 +161,26 @@ body.estado-acordada #cena-lanterna {
 
             /* ALICE NA TOCA */
  
-/* Alice: posicionada no centro da tela, na frente */
-/* A lanterna a revela quando a luz chega perto */
 #alice-lanterna {
-    position: absolute;
-    left: 50%;
-    top: 60%;                         
-    transform: translate(-50%, -50%); 
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    justify-content: center;  /* centraliza horizontalmente */
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
-    z-index: 2;
+    z-index: 10;
 }
  
-/* Corpo de Alice: placeholder com a letra A */
-#alice-corpo {
-    font-family: 'Georgia', serif;
-    font-size: 3rem;                
-    color: #f2e8d5;              
-    line-height: 1;
-    transition: transform 0.3s ease; /* suaviza a animação de passo */
-}
- 
-/* Pernas de Alice */
-#alice-pernas {
-    display: flex;
-    gap: 8px;           /* espaço entre as pernas */
-    margin-top: 4px;
-}
- 
-/* Cada perna: retângulo simples como placeholder */
-.perna {
-    width: 14px;
-    height: 40px;
-    background: #f2e8d5;           /* mesma cor do corpo */
-    border-radius: 4px 4px 6px 6px; 
-}
- 
-/* ANIMAÇÃO de caminhada: as pernas alternam */
-@keyframes andarPerna {
-    0%, 100% { transform: translateY(0);   }   /* posição normal */
-    50%      { transform: translateY(-8px); } /* levanta a perna */
-}
- 
-/* Quando Alice está andando, as pernas animam em ritmos opostos */
-#alice-lanterna.andando #perna-esq {
-    animation: andarPerna 0.4s ease-in-out infinite;            /* perna esquerda */
-}
-#alice-lanterna.andando #perna-dir {
-    animation: andarPerna 0.4s ease-in-out infinite 0.2s;     /* perna direita — 0.2s atrasada */
+#alice-img {
+    width: 200px;
+    height: auto;
+    display: block;
+    pointer-events: none;
+    user-select: none;
+
 }
  
                 /* A PORTA */
@@ -225,6 +193,7 @@ body.estado-acordada #cena-lanterna {
     top: 20%;                          /* começa ao fundo (topo da tela) */
     transform: translateX(-50%);      /* só centraliza — escala é controlada pelo JS */
     pointer-events: auto;
+    opacity: 0;
     transition: opacity 0.3s ease;
 }
 
