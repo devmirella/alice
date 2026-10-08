@@ -1,15 +1,24 @@
 
 let estado = "caindo";
+let avanco = 0;
 let progresso = 0;
 
 
 const PASSO = 0.05; // 5% do caminho por tecla
 
-// Escala da porta: começa grande (3x) e vai para 1x conforme Alice avança
-const ESCALA_PORTA_LONGE = 4;
-const ESCALA_PORTA_PERTO = 0.8;
+// Escala da porta: começa pequeno
+const ESCALA_PORTA_LONGE = 0.35;
+const ESCALA_PORTA_PERTO = 0.75;
 
-
+// Posição vertical da porta: mais alta em telas curtas (paisagem)
+function getTopoPorta() {
+    return window.innerHeight <= 500
+        ? { inicio: 5, fim: 9 }     // paisagem: porta bem mais pra cima
+        : { inicio: 15, fim: 22 };  // padrão (retrato/desktop)
+}
+function curvaAproximacao(x) {
+    return 1 - Math.pow(1 - x, 3);
+}
 
 // Quando o estado muda, essa função é chamada para atualizar a página 
 function mudarEstado(novoEstado) {
@@ -29,12 +38,41 @@ function mudarEstado(novoEstado) {
 // Pega o elemento da Alice no HTML
 const alice = document.getElementById("alice");
 
+// Efeito de "digitando" a mensagem de despertar
+function digitarTexto(elemento, texto, velocidade = 60) {
+    elemento.textContent = "";
+    let i = 0;
+    function proximaLetra() {
+        if (i < texto.length) {
+            elemento.textContent += texto.charAt(i);
+            i++;
+            setTimeout(proximaLetra, velocidade);
+        }
+    }
+    proximaLetra();
+}
+
+// Envolve cada letra num <span> pra animar o efeito de "derreter" individualmente
+function envolverLetras(elemento) {
+    if (elemento.dataset.envolvido) return; // evita rodar duas vezes
+    const texto = elemento.textContent;
+    elemento.innerHTML = "";
+    [...texto].forEach((letra, i) => {
+        const span = document.createElement("span");
+        span.textContent = letra === " " ? "\u00A0" : letra;
+        span.style.animationDelay = `${i * 0.08}s`;
+        elemento.appendChild(span);
+    });
+    elemento.dataset.envolvido = "true";
+}
+
 alice.addEventListener("animationend", function(evento) {
 
     // Verifica se foi especificamente a animação de queda que terminou
     if (evento.animationName === "cairTunel") {
         // Alice sumiu, muda o estado para desmaiada
         mudarEstado("desmaiada");
+        digitarTexto(document.getElementById("texto-despertar"), "Alice, você está atrasada.", 60);
     }
 })
 
@@ -51,53 +89,77 @@ mensagemDespertar.addEventListener("click", function() {
         iniciarSons(); 
     }
 });
-
+mensagemDespertar.addEventListener("keydown", function(e) {
+    if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        mensagemDespertar.click();
+    }
+});
 
 // ____CENA 3: LANTERNA_____
 
 const escuridao      = document.getElementById("escuridao");
-const objetos        = document.querySelectorAll(".objeto-ambiente");
+const objetos        = document.querySelectorAll(".objeto-ambiente:not(#porta)");
 const aliceLanterna  = document.getElementById("alice-lanterna");
-const porta          = document.getElementById("porta");
+const porta          = document.getElementById("porta");   
+const portaImg       = porta.querySelector("img");
 
-const RAIO_LUZ   = 120;  // raio do círculo de luz em pixels
+const RAIO_LUZ   = 115; // raio do círculo de luz em pixels
 
 // ____Move a luz e revela os objetos próximos______
 function moverLuz(x, y) {
+    escuridao.style.setProperty('--x', `${x}px`);
+    escuridao.style.setProperty('--y', `${y}px`);
 
-    escuridao.style.background=`radial-gradient(
-        circle 115px at ${x}px ${y}px,
-        rgba(255, 255, 80, 0.20) 2%,
-        rgba(255, 200, 80, 0.08) 35%,
-        rgba(0, 0, 0, 0.98) 75%
-        )`;
+    let objetoMaisProximo = null;
+    let menorDistancia = Infinity;
 
-        objetos.forEach(obj => {
+    const MARGEM_EXTRA = 60; // pixels extras de tolerância pra não apagar ao ler a fala
 
+    objetos.forEach(function(obj) {
+        if (progresso > 0.5) {
             const rect = obj.getBoundingClientRect();
-            const ox = rect.left + rect.width / 2;    // centro horizontal do objeto
-            const oy = rect.top  + rect.height / 2;  // centro vertical do objeto
-
-            const dist = Math.sqrt((x - ox) ** 2 + (y - oy) ** 2); // distância até a luz
-
-            // Quanto mais perto, mais visível
-            obj.style.opacity = dist < RAIO_LUZ
-                ? (1 - dist / RAIO_LUZ).toFixed(2)
-                : 0;
-        });
-
-        // ALICE é relevada separadamente, não é .objeto-ambiente
-        const alturaTela     = window.innerHeight;
-        const limiarAparecer = alturaTela * 0.65;
-        const zonaAlice      = alturaTela - limiarAparecer;
-
-        if (y > limiarAparecer) {
-            // Quanto mais baixo o mouse, mais visível Alice fica
-            const opacidade = (y - limiarAparecer) / zonaAlice;
-            aliceLanterna.style.opacity = opacidade.toFixed(2);
-        } else {
-            aliceLanterna.style.opacity = 0; // Some quando a lanterna sobe
+            const centroTelaX = window.innerWidth / 2;
+            const larguraCorredor = window.innerWidth * 0.15; // 15% da largura da tela, proporcional
+            const distDoCentro = Math.abs((rect.left + rect.width/2) - centroTelaX);
+            if (distDoCentro < larguraCorredor) return;
         }
+
+        const rect = obj.getBoundingClientRect();
+        const centroX = rect.left + rect.width / 2;
+        const centroY = rect.top + rect.height / 2;
+
+        const dx = x - centroX;
+        const dy = y - centroY;
+        const distancia = Math.sqrt(dx * dx + dy * dy);
+
+        // Usa o raio de detecção próprio do objeto (metade da diagonal + margem)
+        const raioObjeto = Math.sqrt(rect.width**2 + rect.height**2) / 2 + MARGEM_EXTRA;
+
+        if (distancia < raioObjeto && distancia < menorDistancia) {
+            menorDistancia = distancia;
+            objetoMaisProximo = obj;
+        }
+    });
+
+    objetos.forEach(function(obj) {
+        if (obj === objetoMaisProximo) {
+            obj.classList.add("iluminado");
+        } else {
+            obj.classList.remove("iluminado");
+        }
+    });
+
+    const alturaTela = window.innerHeight;
+    const limiarAparecer = alturaTela * 0.65;
+    const zonaAlice = alturaTela - limiarAparecer;
+
+    if (y > limiarAparecer) {
+        const opacidade = (y - limiarAparecer) / zonaAlice;
+        aliceLanterna.style.opacity = opacidade.toFixed(2);
+    } else {
+        aliceLanterna.style.opacity = 0;
+    }
 }
 
 // ________Desktop_________
@@ -113,8 +175,16 @@ document.addEventListener("touchmove", function(e) {
     if (estado !== "acordada") return;
     e.preventDefault();
     const toque = e.touches[0];
-    moverLuz(toque.clientX, toque.clientY);
+    const OFFSET_DEDO = 80; // desloca a luz pra cima do dedo, pra não tampar
+    moverLuz(toque.clientX, toque.clientY - OFFSET_DEDO);
 }, { passive: false});
+
+document.addEventListener("touchstart", function(e) {
+    if (estado !== "acordada") return;
+    const toque = e.touches[0];
+    const OFFSET_DEDO = 80;
+    moverLuz(toque.clientX, toque.clientY - OFFSET_DEDO);
+}, { passive: true });
 
 
 // ___CAMINHADA DE ALICE______
@@ -125,26 +195,43 @@ function atualizarCaminhada() {
     const escalaPorta = ESCALA_PORTA_LONGE - (ESCALA_PORTA_LONGE - ESCALA_PORTA_PERTO) * progresso;
 
     // Porta desce levemente na tela conforme Alice se aproxima
-    const topPorta = 20 + (45 - 20) * progresso; // de 20% até 45% do topo
+    const { inicio, fim } = getTopoPorta();
+    const topPorta = inicio + (fim - inicio) * progresso;
 
-    // Aplica só translateX porque o top é controlado separadamente
-    porta.style.transform = `translateX(-50%) scale(${escalaPorta.toFixed(3)})`;
+    porta.style.setProperty('--scale-atual', escalaPorta.toFixed(3));
     porta.style.top = topPorta + "%";
+ 
+    // Desfoque some conforme Alice se aproxima
+    const desfoque = 20 * (1 - progresso); 
+    portaImg.style.filter = `blur(${desfoque.toFixed(2)}px)`;
 
+    
+    porta.style.setProperty('--engolir', (1 - progresso).toFixed(2));
 
+    if (progresso > 0.6) {
+        const sumico = 1 - ((progresso - 0.6) / 0.4);
+        aliceLanterna.style.opacity = sumico.toFixed(2);    
+        aliceLanterna.style.filter = `blur(${(progresso - 0.6) * 10}px)`;
+    }
     // Quando Alice está 90% do caminho, habilita a maçaneta
     if (progresso >= 0.9 && !porta.classList.contains("chegou")) {
         porta.classList.add("chegou");
         console.log("Alice chegou perto da porta!");
+
     }
 }
+
 // Avança Alice um passo em direção à porta (porta encolhe, Alice não se move)
 function darPasso() {
     if (estado !== "acordada") return;
-    if (progresso >= 1) return;
+    if (avanco >= 1) return;
 
-    progresso = Math.min(progresso + PASSO, 1);
+    avanco = Math.min(avanco + PASSO, 1);
+    progresso = curvaAproximacao(avanco);
     atualizarCaminhada();
+
+    const dica = document.getElementById("dica-avancar");
+    if (dica) dica.classList.add("escondida");
 }
 
 // Desktop: seta para cima faz a porta encolher
@@ -157,10 +244,14 @@ document.addEventListener("keydown", function(e) {
 
 // Mobile: swipe para cima faz a porta encolher
 let swipeStartY = null;
+let swipeStartX = null;
+let swipeStartTime = null;
 
 document.addEventListener("touchstart", function(e) {
     if (estado !== "acordada") return;
     swipeStartY = e.touches[0].clientY;
+    swipeStartX = e.touches[0].clientX;
+    swipeStartTime = Date.now();
 }, { passive: true });
 
 document.addEventListener("touchend", function(e) {
@@ -168,12 +259,23 @@ document.addEventListener("touchend", function(e) {
     if (swipeStartY === null) return;
 
     const swipeEndY = e.changedTouches[0].clientY;
+    const swipeEndX = e.changedTouches[0].clientX;
     const deltaY = swipeStartY - swipeEndY;
+    const deltaX = Math.abs(swipeStartX - swipeEndX);
+    const deltaTime = Date.now() - swipeStartTime;
 
-    if (deltaY > 30) {
+    // Só conta como swipe se: for rápido, mais vertical que horizontal, e passar de 50px
+    const foiRapido = deltaTime < 400;
+    const foiVertical = deltaY > deltaX * 1.5;
+    const passouLimite = deltaY > 50;
+
+    if (foiRapido && foiVertical && passouLimite) {
         darPasso();
     }
+
     swipeStartY = null;
+    swipeStartX = null;
+    swipeStartTime = null;
 }, { passive: true });
 
 // _____CENA 3 -> 4: MAÇANETA_____
@@ -187,11 +289,23 @@ machaneta.addEventListener("click", function() {
     aliceLanterna.style.opacity = "0";
     aliceLanterna.style.transition = "opacity 0.1s ease"; // Some muito rápido
 
+    const dicaClicar = document.getElementById("dica-clicar");
+    if (dicaClicar) dicaClicar.classList.add("escondida");
+
     // Alice some instantaneamente
     mudarEstado("porta");
 
     setTimeout(() => {
         mudarEstado("fechadura");
+
+        // Espera a cena da fechadura terminar de aparecer, depois sussurra
+        setTimeout(() => {
+            const dicaMachaneta = document.getElementById("dica-machaneta");
+            if (dicaMachaneta) {
+                envolverLetras(dicaMachaneta);
+                dicaMachaneta.classList.add("visivel");
+            }
+        }, 1200);
     }, 800); // Alice sumiu na porta
 });
 
@@ -243,134 +357,142 @@ document.addEventListener("touchmove", function(e) {
 let audioCtx = null;
 let mutado = false;
 let volumeGeral = null;
+let reverbNode = null;
 
-// Inicializa o contexto de áudio após interação do usuário 
+// A) INICIA TUDO
 function iniciarSons() {
    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
+    const convolver = audioCtx.createConvolver();
+    const rate = audioCtx.sampleRate;
+    const length = rate * 1.5;
+    const impulse = audioCtx.createBuffer(2, length, rate);
+    for(let ch=0; ch<2; ch++){
+        const data = impulse.getChannelData(ch);
+        for(let i=0; i<length; i++){
+            data[i] = (Math.random()*2-1) * Math.pow(1 - i/length, 2);
+        }
+    }
+    convolver.buffer = impulse;
+    reverbNode = convolver;
     volumeGeral = audioCtx.createGain();
     volumeGeral.gain.value = 1;
-    volumeGeral.connect(audioCtx.destination) 
+    volumeGeral.connect(audioCtx.destination);
+    convolver.connect(volumeGeral);
 
-    tocarGotas();
-    setTimeout(() => {
-        tocarBarulhoMisterioso();
-    }, 10000);
+    tocarGotasEsgoto();
+    tocarArrasto();
+
+    // VOZES REAIS
+    setTimeout(() => tocarVozReal("voz-acorda", 0.4), 1000);
+    setTimeout(() => iniciarVozesAleatorias(), 15000);
 }
 
-// ____________Camada 1: Gotas_______
-
-function tocarGotas() {
-
-    function agendarPingo() {
-        const intervalo = 800 + Math.random() * 1700;
-
+// B) GOTA DE ESGOTO
+function tocarGotasEsgoto() {
+    function agendar() {
+        const intervalo = 600 + Math.random() * 2500;
         setTimeout(() => {
-            if (estado === "acordada" && !mutado) {
-                criarPingo();
-            }
-            agendarPingo();
+            if (estado === "acordada" &&!mutado) criarPingoEsgoto();
+            agendar();
         }, intervalo);
     }
-    agendarPingo();
+    agendar();
 }
-
-// Cria um único som de gota: oscilando
-function criarPingo() {
-
+function criarPingoEsgoto() {
     const osc = audioCtx.createOscillator();
     osc.type = "sine";
-
-    osc.frequency.value = 400 + Math.random() * 400;
-
-    // Volume: aparece e some em 0.3s
+    osc.frequency.setValueAtTime(250 + Math.random()*80, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.15);
+    const filtro = audioCtx.createBiquadFilter();
+    filtro.type = "bandpass";
+    filtro.frequency.value = 600;
     const ganho = audioCtx.createGain();
-    ganho.gain.setValueAtTime(0.15, audioCtx.currentTime);
-    ganho.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-
-    // Conecta: oscilador -> ganho -> volume geral -> saida
-    osc.connect(ganho);
+    ganho.gain.setValueAtTime(0.4, audioCtx.currentTime);
+    ganho.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
+    osc.connect(filtro);
+    filtro.connect(ganho);
+    ganho.connect(reverbNode);
     ganho.connect(volumeGeral);
-
-    osc.start(audioCtx.currentTime);
-    osc.stop(audioCtx.currentTime + 0.3);
-
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.8);
 }
 
-// _____Camada 2: Barulho misterioso___
-
-function tocarBarulhoMisterioso() {
-
-    let intensidade = 0.03;
-
+// C) ARRASTO
+function tocarArrasto() {
     function ciclo() {
-        if (estado !== "acordada") {
-            setTimeout(ciclo, 3000); // Pausa e tenta novamente
-            return;
-        }
-
-        if (!mutado) {
-            criarBarulho(intensidade);
-        }
-
-        // Crescer ate 0.35
-        intensidade  = Math.min(intensidade + 0.015, 0.35);
-
-        const proximoIntervalo = Math.max(3000, 8000 - intensidade * 10000);
-        setTimeout(ciclo, proximoIntervalo);
+        const tempoAteProximo = 8000 + Math.random() * 15000;
+        setTimeout(() => {
+            if (estado!== "acordada") { ciclo(); return; }
+            if (!mutado) criarArrasto();
+            ciclo();
+        }, tempoAteProximo);
     }
     ciclo();
 }
-
-// Cria um única aparição do barulho
-function criarBarulho(volume) {
-
-    const bufferSize = audioCtx.sampleRate * 1.5;
+function criarArrasto() {
+    const bufferSize = audioCtx.sampleRate * (1.2 + Math.random()*0.8);
     const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-    const dados = buffer.getChannelData(0);
-
-    for (let i = 0; i < bufferSize; i++) {
-        dados[i] = Math.random() * 2 - 1;  // Valores entre -1 e 1
+    const data = buffer.getChannelData(0);
+    for(let i=0; i<bufferSize; i++) {
+        data[i] = (Math.random()*2-1) * 0.6;
+        if(i>0) data[i] = (data[i] + data[i-1]) * 0.5;
     }
-
-    // Cria a fonte de áudio e aplica um filtro passa-baixa para suavizar o som (remove frequências altas)
-    const fonte = audioCtx.createBufferSource(); // Cria o “player”
-    fonte.buffer = buffer; // Coloca o áudio no player
-
+    const src = audioCtx.createBufferSource();
+    src.buffer = buffer;
     const filtro = audioCtx.createBiquadFilter();
     filtro.type = "lowpass";
-    filtro.frequency.value = 120; // Corta tudo acima de 120Hz
-
-    // Envelope suave: aparece, sustenta, some, sem cliques bruscos no áudio
-    const ganho = audioCtx.createGain();  // cria o “botão de volume”
-    ganho.gain.setValueAtTime(0, audioCtx.currentTime) // Começa mudo
-    ganho.gain.linearRampToValueAtTime(volume, audioCtx.currentTime + 0.4);
-    ganho.gain.linearRampToValueAtTime(volume, audioCtx.currentTime + 1.0);
-    ganho.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1.5);
-
-    // Conecta: fonte → filtro → ganho → volume geral → saída
-    fonte.connect(filtro);
+    filtro.frequency.value = 90 + Math.random()*40;
+    const ganho = audioCtx.createGain();
+    ganho.gain.setValueAtTime(0, audioCtx.currentTime);
+    ganho.gain.linearRampToValueAtTime(0.25, audioCtx.currentTime + 0.5);
+    ganho.gain.linearRampToValueAtTime(0, audioCtx.currentTime + bufferSize/audioCtx.sampleRate);
+    src.connect(filtro);
     filtro.connect(ganho);
     ganho.connect(volumeGeral);
-
-    fonte.start(audioCtx.currentTime);
-    fonte.stop(audioCtx.currentTime + 1.5);
+    src.start();
 }
 
-// _____Botão de mute____________
+// D) VOZES REAIS (SEUS 3 MP3)
+function tocarVozReal(id, volume = 0.3) {
+    const audio = document.getElementById(id);
+    if(!audio || mutado) return;
+    audio.volume = volume;
+    audio.playbackRate = 0.9 + Math.random()*0.1;
+    audio.currentTime = 0;
+    audio.play().catch(()=>{});
+}
+function iniciarVozesAleatorias() {
+    function agendar() {
+        const tempo = 20000 + Math.random() * 25000;
+        setTimeout(() => {
+            if(estado!== "acordada") { agendar(); return; }
+            const vozes = ["voz-atrasada", "voz-tictac"];
+            const escolhida = vozes[Math.floor(Math.random()*vozes.length)];
+            tocarVozReal(escolhida, 0.2);
+            agendar();
+        }, tempo);
+    }
+    agendar();
+}
 
+// E) BOTÃO MUTE - FICA NO FINAL
 const btnMute = document.getElementById("btn-mute");
+const vozesAudio = ["voz-acorda", "voz-atrasada", "voz-tictac"];
+
 btnMute.addEventListener("click", function() {
     mutado = !mutado;
+    if (volumeGeral) {
+        volumeGeral.gain.linearRampToValueAtTime(mutado ? 0 : 1, audioCtx.currentTime + 0.3);
+    }
 
-    volumeGeral.gain.linearRampToValueAtTime(
-        mutado ? 0 : 1,
-        audioCtx.currentTime + 0.3
-    );
+    // Silencia (ou não) as vozes reais que possam estar tocando agora
+    vozesAudio.forEach(id => {
+        const audio = document.getElementById(id);
+        if (audio) audio.muted = mutado;
+    });
 
     btnMute.textContent = mutado ? "🔇" : "🔉";
 });
-
 
 // Interatividade da experiência Alice — por enquanto só um teste
 document.addEventListener( "DOMContentLoaded", () => {

@@ -16,8 +16,8 @@ body {
 
                   /* CENA 1: A QUEDA  */
 
-/* Container da cena de queda: ocupa toda a tela */
-.cena-queda {
+/* Container da cena de queda: ocupa toda a tela */   
+#cena-queda {
     position: fixed;     
     inset: 0;             /* Atalho para top, right, bottom, left:0 */
     overflow: hidden;    /* Corta o que sair da tela */
@@ -30,12 +30,14 @@ body {
     position: absolute;                 /* Permite mover livremente com top/left */
     left: 50%;                        
     top: -100px;                      /* Começa escondida acima da tela */
-
-    font-family: 'Georgia', serif;  /* Fonte estilo livro antigo */
-    font-size: 80px;            
-    color: #f2f2f2;    
     
     animation: cairTunel 4s ease-in forwards; /* Aplica animação de queda */
+}
+
+.alice img {
+    width: 120px;
+    height: auto;
+    display: block;
 }
 
 
@@ -62,6 +64,12 @@ body {
 
 }
 
+.objeto img {
+    width: 50px;
+    height: auto;
+    display: block;
+}
+
 /* Obejtos da queda: Posição horizontal e atraso de cada objeto */
 .objeto-1 { left: 20%; animation-delay: 0.3s; }   /* Aparece 0.3s depois */
 .objeto-2 { left: 35%; animation-delay: 0.6s; }  /* Aparece 0.6s depois */
@@ -69,16 +77,18 @@ body {
 .objeto-4 { left: 78%; animation-delay: 0.5s; }/* Aparece 0.5s depois */
 
 
+.objeto-5 { left: 45%; animation-delay: 0.8s; }
+.objeto-6 { left: 55%; animation-delay: 0.2s; }
+
 /* ANIMAÇÃO dos objetos: caem, encolhem e giram 360° */
 @keyframes cairObjetoTunel {
     0% {
-        transform: translateY(-80px) scale(1) rotate(0deg);  /* Começa acima da tela */
-        opacity: 1;                                         /* Totalmente visível */
-    }    
+        transform: translateY(-80px) scale(1) rotate(0deg);
+        opacity: 1;
+    }
     100% {
-        transform: translateY(900px) scale(0.1) rotate(360deg);  /* cai, encolhe para 10%, gira 360°  */
-        opacity: 0.5;                                           /* ainda parcialmente visível no final */
-        
+        transform: translateY(120vh) scale(0.1) rotate(360deg);
+        opacity: 0.5;
     }
 }
             /* CENA 2: ACORDAR */
@@ -88,23 +98,41 @@ body {
     position: fixed;                   
     top: 50%;                          
     left: 50%;                        
-    transform: translate(-50%, -50%);        /* Ajuste de centralização */
-
-    color: rgba(255, 255, 255, 0.5); 
-    font-family: serif;
-    font-size: 1rem;                      /* Tamanho pequeno, sutil */
-    letter-spacing: 0.3em;
-
+    transform: translate(-50%, -50%);
+    text-align: center;
     opacity: 0;
-    pointer-events: none;              /* Não captura clique quando invisível */
+    pointer-events: none;
+    transition: opacity 2s ease;
+    z-index: 30;
 
-    transition: opacity 1.5s ease;   /* Aparece e some suavemente em 1.5s */
+    color: rgba(255, 255, 100, 0.85); 
+    font-family: 'Georgia', serif;
+    font-size: 1.5rem;
+    font-style: italic;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    cursor: pointer;
+
+    
+    border: 1px solid rgba(255,170,110,0.35);
+    padding: 1.2rem 2.8rem;
+    border-radius: 999px;
+    background: rgba(20, 15, 5, 0.45);
+    box-shadow:
+         0 0 20px rgba(200, 170, 110, 0.15),
+         inset 0 0 15px rgba(200, 170, 110, 0.08);     
+}
+
+#mensagem-despertar:focus-visible,
+#porta-machaneta:focus-visible {
+    outline: 2px solid rgba(255, 220, 150, 0.8);
+    outline-offset: 4px;
 }
 
 /* Mensagem aparece quando desmaiada */
 body.estado-desmaiada #mensagem-despertar {
-    opacity: 1;                 /* Torna visível */
-    pointer-events: auto;      /* Agora pode receber cliques */
+    opacity: 1;                
+    pointer-events: auto;      
 
 }
 
@@ -135,35 +163,222 @@ body.estado-acordada #cena-lanterna {
 }
 
 /* Camada de escuridão com o buraco de luz */
-#escuridao {
+ #escuridao {
     position: fixed;
-    inset: 0;   
+    inset: 0;
     height: 100vh;
     pointer-events: none;
-
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    --x: 50%;
+    --y: 50%;
+    
     background: radial-gradient(
-        circle 120px at 50% 50%,
-        rgba(255, 200, 80, 0.45) 0%,
-        rgba(255, 200, 80, 0.15) 45%,
-        rgba(0, 0, 0, 0.97) 75%
+        ellipse 160px 135px at var(--x) var(--y),
+        transparent 0%,
+        transparent 30%,
+        rgba(0,0,0,0.85) 60%,
+        rgba(0,0,0,0.98) 80%
     );
 }
 
-/* Objetos do ambiente: invisíveis */
+
+body.estado-acordada #escuridao {
+    opacity: 1;
+    animation: tremor-lanterna 0.15s infinite alternate;
+}
+
+@keyframes tremor-lanterna {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(0.5px, 0.3px) scale(1.005); }
+}
+
+/* Garante que a lanterna não aparece antes da hora */
+body.estado-caindo #cena-lanterna,
+body.estado-desmaiada #cena-lanterna {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+
 .objeto-ambiente {
-    position: absolute;
-    font-size: 2.5rem;
-    opacity: 0;            /* invisível até a luz chegar perto */
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-    user-select: none;   /* não seleciona o emoji por acidente */
+    position: absolute;  
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+    transition: none; 
+}
+.objeto-ambiente img {
+    width: clamp(45px, 9vw, 160px);
+    height: auto;
+    filter: brightness(0.08) saturate(0.2);
+    transition: filter 0.4s ease;
+}
+
+.objeto-ambiente.iluminado img {
+    filter: brightness(1) saturate(1) drop-shadow(0 0 18px rgba(255, 220, 150, 0.45));
+    animation: pulsar-luz 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes pulsar-luz {
+    from { filter: brightness(1) saturate(1) drop-shadow(0 0 18px rgba(255,220,150,0.45)); }
+    to   { filter: brightness(1.1) saturate(1.2) drop-shadow(0 0 26px rgba(255,220,150,0.6)); }
+}
+
+
+
+/* Ajustes individuais — algumas artes são naturalmente maiores/menores */
+#obj-casticai img    { width: clamp(40px, 7vw, 130px); }
+#obj-prateleira img  { width: clamp(45px, 8vw, 145px); }
+#obj-tela img        { width: clamp(45px, 8vw, 145px); }
+#obj-chave img       { width: clamp(55px, 10vw, 210px); }
+#obj-espelho img     { width: clamp(50px, 9vw, 175px); }
+#obj-cogumelo img    { width: clamp(50px, 9vw, 175px); }
+
+/* Posição do Drink no desktop (puxado um pouco pra baixo) */
+#obj-chave {
+    top: 20% !important;
+    right: 18%;
+}
+#obj-chave img { width: clamp(55px, 10vw, 210px) !important; }
+
+          /*  FALAS DOS OBJETOS  */
+  
+.fala-objeto { 
+    position: absolute; 
+    top: calc(100% + 8px); 
+    left: 50%; 
+    transform: translateX(-50%) translateY(4px); 
+
+    width: max-content;
+    max-width: min(220px, 80vw);
+    text-align: center;
+    
+    color: rgba(255, 240, 255, 1);
+    font-family: 'Georgia', serif; 
+    font-style: italic; 
+    font-size: 0.8rem; 
+    line-height: 1.4;
+    letter-spacing: 0.04em; 
+ 
+    opacity: 0; 
+    filter: blur(0px);
+    pointer-events: none; 
+
+    transition: 
+        opacity 0.8s ease, 
+        filter 0.8s ease, 
+        transform 0.8s ease;
+
+    text-shadow: 
+        0 0 4px rgba(255, 255, 255, 1),
+        0 0 10px rgba(210, 170, 255, 0.9),
+        0 0 20px rgba(170, 120, 255, 0.6);
+
+    z-index: 20;
+}
+
+.objeto-ambiente.iluminado .fala-objeto { 
+    opacity: 1; 
+    filter: blur(0); 
+    transform: translateX(-50%) translateY(0); 
+}
+
+
+        /* POSIÇÃO DE CADA FALA  */
+
+
+/* RELÓGIO
+   Está no alto → fala abaixo */
+#obj-casticai .fala-objeto {
+    top: calc(100% + 1px);
+    max-width: min(190px, 80vw);
+}
+
+
+/* RAINHA
+   Texto maior → duas linhas se necessário */
+#obj-prateleira .fala-objeto {
+    top: calc(100% + 10px);
+    max-width: min(230px, 80vw);
+}
+
+
+/* GATO
+   Está próximo ao final da tela → fala acima */
+#obj-tela .fala-objeto {
+    top: auto;
+    bottom: calc(100% - 10px);
+    max-width: min(210px, 80vw);
+}
+
+
+/* DRINK ME / EAT ME
+   Está no alto → fala abaixo */
+#obj-chave .fala-objeto {
+    top: auto;
+    bottom: 30%;
+    max-width: min(180px, 80vw);
+}
+
+/* ESPELHO
+   Centro da tela → fala abaixo */
+#obj-espelho .fala-objeto {
+    top: calc(100% + 10px);
+    max-width: min(180px, 80vw);
+}
+
+
+/* COGUMELO
+   Fala acima, mais perto */
+#obj-cogumelo .fala-objeto {
+    top: auto;
+    bottom: calc(100% - 80px);   /* mais perto da arte */
+    max-width: min(210px, 80vw);
 }
 
             /* ALICE NA TOCA */
+
+#dica-avancar {
+    position: fixed;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 230, 180, 0.6);
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 25;
+    animation: piscar-dica 2.5s ease-in-out infinite;
+}
+
+#dica-avancar.escondida {
+    opacity: 0 !important;
+    animation: none;
+    transition: opacity 0.6s ease;
+}
+
+body.estado-acordada #dica-avancar {
+    opacity: 1;
+    transition: opacity 1s ease 1.5s; /* aparece 1.5s depois de acordar */
+}
+
+body.estado-porta #dica-avancar,
+body.estado-fechadura #dica-avancar {
+    opacity: 0 !important;
+}
+
+@keyframes piscar-dica {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 0.2; }
+}
  
 #alice-lanterna {
     position: fixed;
-    bottom: 0;
+    bottom: -10px;
     left: 0;
     right: 0;
     display: flex;
@@ -171,102 +386,177 @@ body.estado-acordada #cena-lanterna {
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
-    z-index: 10;
+    z-index: 20;
 }
  
 #alice-img {
-    width: 200px;
+    width: 145px;
     height: auto;
     display: block;
     pointer-events: none;
     user-select: none;
+    transform: scaleX(0.9);
 
 }
  
                 /* A PORTA */
 
 /* A porta: começa grande ao fundo (distante) */
-/* A escala começa em 3x e vai encolhendo via JS conforme Alice avança */                
 #porta {
     position: absolute;
     left: 50%;
-    top: 20%;                          /* começa ao fundo (topo da tela) */
-    transform: translateX(-50%);      /* só centraliza — escala é controlada pelo JS */
-    pointer-events: auto;
+    top: 15%;
+    transform: translateX(-50%);
+    pointer-events: none;
     opacity: 0;
     transition: opacity 0.3s ease;
+    z-index: 5;
+    --scale-atual: 0.35;
 }
 
-/* Quando Alice chega perto (JS adiciona classe "chegou"), porta recebe clique na maçaneta */
-#porta.chegou {
-    pointer-events: none;    /* desativa clique na porta inteira */
+@keyframes respirar-porta {
+    0%,100% { transform: scale(var(--scale-atual)); }
+    50% { transform: scale(calc(var(--scale-atual) * 1.03)); }
 }
 
-/* Porta fica invisível e não clicável antes de Alice acordar */
-body.estado-caindo #porta,
-body.estado-desmaiada #porta {
-    opacity: 0;
-    pointer-events: none;
-}
 
-/* Moldura da porta: retângulo com arco gótico dourado */
-#porta-moldura {
-    width: 60px;                                        /* largura da porta */
-    height: 100px;                                     /* altura da porta */
-    border: 3px solid rgba(180, 140, 80, 0.9);      /* borda cor dourado envelhecido */
-    border-radius: 30px 30px 4px 4px;                /* arredonda só o topo — arco gótico */
-    background: #1a0e00;                          /* interior escuro */
-    position: relative;                            /* referência para a maçaneta */
- 
-    box-shadow:
-        0 0 12px rgba(180, 140, 80, 0.3),      /* brilho externo suave */
-        inset 0 0 8px rgba(0, 0, 0, 0.8);     /* sombra interna que dá profundidade */
-}
- 
-/* Painel interno decorativo */
-#porta-painel {
-    position: relative;
-    top: 12px;
-    left: 8px;
-    right: 8px;
-    bottom: 12px;
-    border: 1px solid rgba(180, 140, 80, 0.35);
-    border-radius: 22px 22px 2px 2px;
-}
-
-/* Maçaneta: Clique acontece aqui */
-#porta-machaneta {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    background: rgba(200, 160, 80, 0.9);
-    border-radius: 50%;
-    right: 6px;
-    top: 50%;
-    transform: translateY(-50%);
-    box-shadow: 0 0 6px rgba(200, 160, 80, 0.6); 
-    cursor: pointer;
+body.estado-acordada #porta {
+    opacity: 1 !important;
     pointer-events: auto;
+}
+
+/* Estado inicial desfocado */
+#porta img {
+    display: block;
+    filter: blur(20px);
+    transition: filter 0.3s ease-out;
+    animation: respirar-porta 4s ease-in-out infinite;
+}
+
+
+/* PORTA grande e brilhando */
+#porta.chegou {
+    transform: translateX(-50%) scale(1.4) !important;
+    filter: drop-shadow(0 0 20px rgba(255, 230, 150, 0.6)) 
+            drop-shadow(0 0 40px rgba(255, 200, 100, 0.4))
+            brightness(1.2);
+    transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                filter 1s ease;
     z-index: 10;
 }
 
-/* Hover na maçaneta: Brilha mais */
-#porta-machaneta:hover {
-    box-shadow: 0 0 14px rgba(200, 160, 80, 1);
-    background: rgba(220, 180, 100, 1);
+#porta.chegou {
+    pointer-events: auto; /* só libera quando grande */
 }
 
-/* Moldura brilha */
-#porta:hover #porta-moldura {
-    box-shadow: 
-        0 0 20px rgba(180, 140, 80, 0.6),
-        inset 0 0 8px rgba(0, 0, 0, 0.8);
+#dica-machaneta {
+    position: absolute;
+    top: calc(50% + 160px);
+    left: 50%;
+    transform: translate(-50%, 0);
+    white-space: nowrap;
+
+    color: rgba(255, 225, 180, 0.85);
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    letter-spacing: 0.12em;
+
+    opacity: 0;
+    pointer-events: none;
+    text-shadow: 0 0 10px rgba(220, 180, 120, 0.6);
+    z-index: 20;
+}
+
+#dica-clicar {
+    position: absolute;
+    bottom: -2.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+
+    color: rgba(255, 230, 180, 0.65);
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+
+    opacity: 0;
+    pointer-events: none;
+    z-index: 15;
+}
+
+#porta.chegou #dica-clicar {
+    opacity: 1;
+    animation: piscar-dica 2.5s ease-in-out infinite;
+}
+
+#dica-clicar.escondida {
+    opacity: 0 !important;
+    animation: none;
+    transition: opacity 0.5s ease;
+}
+
+#dica-machaneta.visivel {
+    animation: sussurrar-sombrio 4s ease-in-out infinite;
+}
+
+
+#dica-machaneta.escondida {
+    opacity: 0 !important;
+    animation: none;
+    transition: opacity 0.6s ease;
+}
+
+#dica-machaneta span {
+    display: inline-block;
+    animation: derreter-letra 3s ease-in-out infinite;
+}
+
+@keyframes derreter-letra {
+    0%, 100% { opacity: 0.15; filter: blur(0px); transform: translateY(0px); }
+    50%      { opacity: 0.6;  filter: blur(1.5px); transform: translateY(3px); }
+}
+
+@keyframes sussurrar-sombrio {
+    0%   { opacity: 0.35; filter: blur(0px);   transform: translateX(-50%) translateY(0px); }
+    35%  { opacity: 0.9;  filter: blur(0.4px); transform: translateX(-50%) translateY(1px); }
+    65%  { opacity: 0.6;  filter: blur(1.8px); transform: translateX(-50%) translateY(4px); }
+    100% { opacity: 0.35; filter: blur(0px);   transform: translateX(-50%) translateY(0px); }
+}
+
+#porta.chegou #porta-machaneta {
+    pointer-events: auto !important;
+}
+
+#porta:not(.chegou) #porta-machaneta {
+    pointer-events: none;
+    cursor: default;
+}
+
+
+#porta-machaneta {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    background: transparent;
+    border-radius: 50%;
+    left: 50%;
+    top: 46%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* tira esse hover dourado que pinta um quadrado em cima da sua art-porta */
+#porta-machaneta:hover {
+    box-shadow: 0 0 20px rgba(200, 160, 80, 0.9);
+    background: transparent; /* mantém invisível */
 }
 
 /* Quando o estado muda para "porta": Alice sumiu, porta some junto */
 body.estado-porta #porta {
     opacity: 0;                              
-    transition: opacity 0.3s ease;
     pointer-events: none;                  
 }
 
@@ -293,23 +583,18 @@ body.estado-fechadura #cena-fechadura {
 /* Interior da fechadura: Pais das maravilhas */
 #fechadura-interior {
     position: absolute;
-    width: 90px;
-    height: 130px;
-
-    background: radial-gradient(ellipse at center, rgba(180, 230, 120, 0.9) 0%,  rgba(100, 180, 60, 0.7) 40%, rgba(20, 60, 10, 0.9) 100% );
-    /* Formato da fechadura usando "clip-path" */
-    clip-path: path('M 45 0 A 45 45 0 1 1 44.9 0 Z M 20 90 L 70 90 L 65 130 L 25 130 Z');
+    width: 157px; /* era 90px - agora gigante */
+    height: 239px; /* era 130px */
     display: flex;
     align-items: center;
     justify-content: center;
     transition: transform 0.15s ease-out;
-
+    z-index: 1; /* fica atrás da máscara */
 }
-
 #fechadura-mascara {
     position: absolute;
     inset: 0;
-    background: #000;
+    background: transparent;
     width: 90px;
     height: 130px;
     position: relative;
@@ -319,12 +604,16 @@ body.estado-fechadura #cena-fechadura {
     background: transparent;
 }
 
-#fechadura-texto {
-    font-size: 2rem;
-    color: rgba(255, 255, 200, 0.8);
-    animation: brilharFechadura 3s ease-in-out infinite;
-    user-select: none;
+#img-fechadura-final {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: brightness(1.1) contrast(1.1);
+    transition: transform 0.15s ease-out;
 }
+
+#fechadura-texto {
+    display: none;
+} 
 
 @keyframes brilharFechadura {
     0%, 100% { opacity: 0.6; transform: scale(1); }
@@ -337,6 +626,9 @@ body.estado-fechadura #cena-fechadura {
     bottom: 2rem;
     left: 50%;
     transform: translate(-50%);
+    width: max-content;
+    max-width: 90vw;
+    text-align: center;
     color: rgba(255, 255, 255, 0.25);
     font-family: serif;
     font-size: 0.75rem;
@@ -374,8 +666,141 @@ body.estado-fechadura #btn-mute {
     pointer-events: auto;
 }
 
-
 /* Hover: fica mais visivel ao passar o volume */
 #btn-mute:hover {
     opacity: 1;
 }
+
+
+
+/* ==================== AJUSTES PARA MOBILE ==================== */
+@media (max-width: 600px) {
+
+    .objeto-ambiente:not(#porta) img {
+        width: clamp(40px, 16vw, 90px) !important;
+    }
+
+    #obj-casticai .fala-objeto {
+        left: -25px !important;
+        transform: translateX(0) !important;
+        text-align: center !important;
+    }
+
+    #obj-tela .fala-objeto {
+        left: -40px !important;
+        transform: translateX(0) !important;
+        text-align: center !important;
+    }
+
+    #obj-chave .fala-objeto {
+        left: auto !important;
+        right: 5px !important;
+        transform: translateX(0) !important;
+        text-align: center !important;
+    }
+
+    #obj-cogumelo .fala-objeto {
+        top: auto !important;
+        bottom: 80% !important;
+        margin-bottom: 4px !important;
+        transform: translateX(-50%) translateY(0) !important;
+    }
+
+    #obj-casticai img    { width: clamp(35px, 14vw, 75px) !important; }
+    #obj-prateleira img  { width: clamp(40px, 15vw, 80px) !important; }
+    #obj-tela img        { width: clamp(40px, 15vw, 80px) !important; }
+    .objeto-ambiente#obj-chave img { width: clamp(60px, 22vw, 130px) !important; }
+    #obj-espelho img     { width: clamp(42px, 16vw, 90px) !important; }
+    #obj-cogumelo img    { width: clamp(42px, 16vw, 90px) !important; }
+
+    /* Reposiciona os objetos */
+    #obj-casticai   { left: 15% !important; top: 10% !important; }
+    #obj-prateleira { left: 25% !important; top: 30% !important; }
+    #obj-tela       { left: 22% !important; top: 88% !important; }
+
+    #obj-chave      { right: 15% !important; top: 8% !important; }
+    #obj-espelho    { right: 20% !important; top: 38% !important; }
+    #obj-cogumelo   { right: 19% !important; top: 88% !important; }
+
+    /* Só a arte do drink vai mais pra esquerda */
+    #obj-chave img {
+        position: relative;
+        left: -22px !important;
+    }
+
+    #porta.chegou {
+        transform: translateX(-50%) scale(1.9) !important;
+    }
+
+    .fala-objeto {
+        font-size: 0.7rem !important;
+        max-width: min(160px, 70vw) !important;
+    }
+}
+
+/* ==================== MOBILE LANDSCAPE ==================== */
+@media (max-height: 500px), (max-width: 900px) and (orientation: landscape) {
+
+    /* Reduz o tamanho das artes */
+    .objeto-ambiente:not(#porta) img {
+        width: clamp(32px, 12vw, 70px) !important;
+    }
+
+    #obj-casticai img    { width: clamp(28px, 10vw, 60px) !important; }
+    #obj-prateleira img  { width: clamp(32px, 11vw, 65px) !important; }
+    #obj-tela img        { width: clamp(32px, 11vw, 65px) !important; }
+    .objeto-ambiente#obj-chave img { width: clamp(48px, 16vw, 100px) !important; }
+    #obj-espelho img     { width: clamp(34px, 12vw, 70px) !important; }
+    #obj-cogumelo img    { width: clamp(34px, 12vw, 70px) !important; }
+
+    /* Reposiciona com mais folga vertical */
+    #obj-casticai   { left: 12% !important; top: 8% !important; }
+    #obj-prateleira { left: 22% !important; top: 28% !important; }
+    #obj-tela       { left: 18% !important; top: 78% !important; }
+
+    #obj-chave      { right: 12% !important; top: 20% !important; }
+    #obj-espelho    { right: 18% !important; top: 35% !important; }
+    #obj-cogumelo   { right: 14% !important; top: 78% !important; }
+
+    /* Drink um pouco mais pra esquerda */
+    #obj-chave img {
+        left: -18px !important;
+    }
+
+    /* Falas menores */
+    .fala-objeto {
+        font-size: 0.65rem !important;
+        max-width: min(140px, 60vw) !important;
+    }
+
+    /* Cogumelo — usa o valor que você já calibrizou (-25px) */
+    #obj-cogumelo .fala-objeto {
+        bottom: calc(100% - 25px) !important;
+    }
+
+    #obj-tela .fala-objeto {
+        bottom: calc(100% - 8px) !important;
+    }
+
+    /* Porta e Alice menores */
+    #porta.chegou {
+        transform: translateX(-50%) scale(1.5) !important;
+    }
+
+    #alice-img {
+        width: 110px !important;
+    }
+
+    #porta img {
+        width: 120px !important;
+    }
+}
+
+/* Ajuste para tablets em pé (retrato) — afasta relógio, gato e cogumelo da borda */
+@media (min-width: 601px) and (max-width: 1024px) and (orientation: portrait) {
+    #obj-casticai   { left: 18% !important; }
+    #obj-tela       { left: 18% !important; }
+    #obj-cogumelo   { right: 18% !important; }
+    #obj-chave img  { width: clamp(70px, 14vw, 260px) !important; }
+}
+
