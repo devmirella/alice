@@ -736,6 +736,13 @@ body.estado-fechadura #btn-mute {
         font-size: 0.7rem !important;
         max-width: min(160px, 70vw) !important;
     }
+
+    #dica-clicar {
+    white-space: normal !important;
+    width: 30vw;
+    text-align: center;
+    font-size: 0.8rem !important;
+}
 }
 
 /* ==================== MOBILE LANDSCAPE ==================== */
