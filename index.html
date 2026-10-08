@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alice</title>
+
+    <!-- Conecta o CSS -->
+    <link rel="stylesheet" href="/static/css/alice.css">
+</head>
+<body class="estado-caindo">
+
+             <!-- Cena 1: A QUEDA -->
+    <!-- Essa div engloba tudo que aparece durante a queda -->
+    <div id="cena-queda">
+
+        <!-- Alice durante a queda -->
+        <div id="alice" class="alice">
+            <img src="/static/images/art-alice-caindo.png" alt="Alice caindo">
+        </div>
+        <!-- Objetos caindo junto com Alice, cada um tem uma classe diferente pra cair em ritmo diferente -->
+        <div class="objeto objeto-1"><img src="/static/images/art-cadeira-queda.png" alt=""></div>
+        <div class="objeto objeto-2"><img src="/static/images/art-livro-queda.png" alt=""></div>
+        <div class="objeto objeto-3"><img src="/static/images/art-chave-queda.png" alt=""></div>
+        <div class="objeto objeto-4"><img src="/static/images/art-bebida-queda.png" alt=""></div>
+        <div class="objeto objeto-5"><img src="/static/images/art-sapato-queda.png" alt=""></div>
+        <div class="objeto objeto-6"><img src="/static/images/art-xicara-queda.png" alt=""></div>    
+    </div>
+
+            <!-- Cena 2: ACORDAR -->
+    <!-- Mensagem que aparece quando Alice está desmaiada, pedindo interação -->
+    <div id="mensagem-despertar" role="button" tabindex="0" aria-label="Acordar Alice">
+        <span id="texto-despertar">Alice, você está atrasada.</span>
+    </div>
+
+            <!-- Cena 3: Ambiente escuro -->
+    <!-- Fica escondida até o estado mudar para acordada -->
+    <div id="cena-lanterna">
+
+        <div id="dica-avancar">↑ suba para se aproximar</div>
+        
+                             <!-- OBJETOS DO AMBIENTE -->
+        <!-- Lateral esquerda -->
+        <div class="objeto-ambiente" id="obj-casticai" style="left:10%; top:14%; transform: translate(-50%, -50%)">
+            <img src="/static/images/art-relogio.png" alt="relogio de bolso" style="width:180px; height:auto">
+            <div class="fala-objeto">"Você não pode desperdiçar o tempo."</div>
+        </div>
+        <div class="objeto-ambiente" id="obj-prateleira" style="left:28%; top:42%; transform: translate(-50%, -50%)">
+            <img src="/static/images/art-Rainha-copas.png" alt="Rainha de copas" style="width:200px; height:auto">
+            <div class="fala-objeto">"Quem está pintando minhas rosas de vermelho?"</div>
+        </div>
+        <div class="objeto-ambiente" id="obj-tela" style="left:10%; top:82%; transform: translate(-50%, -50%);">
+            <img src="/static/images/art-Cheshire.png" alt="gato" style="width:200px; height:auto;">
+            <div class="fala-objeto">“Todos aqui são loucos... você deve ter percebido."</div>
+        </div>
+
+        <!-- Lateral direita - bem espalhadas -->
+        <div class="objeto-ambiente" id="obj-chave" style="right:10%; top:12%; transform: translate(50%, -50%);">
+            <img src="/static/images/art-drink-eat.png" alt="drink me" style="width:300px; height:auto;">
+            <div class="fala-objeto">"Beba-me... Coma-me..."</div>
+        </div>
+        <div class="objeto-ambiente" id="obj-espelho" style="right:28%; top:55%; transform: translate(50%, -50%);">
+            <img src="/static/images/art-espelho.png" alt="espelho" style="width:250px; height:auto;">
+            <div class="fala-objeto">"Quem é você, Alice?"</div>
+        </div>
+        <div class="objeto-ambiente" id="obj-cogumelo" style="right:10%; top:84%; transform: translate(50%, -50%);">
+            <img src="/static/images/art-cogumelo.png" alt="cogumelo" style="width:250px; height:auto;">
+            <div class="fala-objeto">"não se esqueça de mim, Alice!"</div>  
+        </div>
+                
+        <div id="porta" class="objeto-ambiente">
+            <img src="/static/images/art-porta.png" alt="porta" style="width:260px; height:auto">
+            <div id="porta-machaneta" role="button" tabindex="0" aria-label="Abrir a fechadura em forma de coração"></div>
+            <div id="dica-clicar">tenho que abrir essa fechadura...</div>
+        </div>
+
+        <!-- Buraco de luz -->
+        <div id="escuridao"></div>
+
+    </div>
+
+    <div id="alice-lanterna">
+        <img id="alice-img" src="/static/images/alice-img.png" alt="Alice">
+    </div>
+
+                            <!-- Cena 4: FECHADURA  -->
+    <!-- Aparece depois que alice chega na porta -->
+    <div id="cena-fechadura">
+        
+        <!-- Forma da fechadura -->
+        <div id="fechadura-mascara"></div>
+
+        <!-- Do outro lado da porta -->
+        <div id="fechadura-interior">
+            <!-- Coelho espiando pelo buraco da fechadura -->
+            <img src="/static/images/art-coelho.png" alt="coelho na fechadura" id="img-fechadura-final">
+        </div>
+        <div id="dica-machaneta">"...estou atrasado, estou atrasado..."</div>
+        <div id="creditos">Mirella · Merit-Nefert-Aset · portfólio</div>
+    
+    </div>
+
+    <button id="btn-mute">🔉</button>
+
+    <audio id="voz-acorda" src="/static/audios/aud-1.wav" preload="auto"></audio>
+    <audio id="voz-atrasada" src="/static/audios/aud-2.wav" preload="auto"></audio>
+    <audio id="voz-tictac" src="/static/audios/aud-3.wav" preload="auto"></audio>
+
+    <!-- Conecta o JS, defer faz eke carregar só depois que o HTML estiver pronto -->
+    <script src="/static/js/alice.js" defer></script>
+
+
+</body>
+</html>
+
