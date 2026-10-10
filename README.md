@@ -2,7 +2,7 @@
 
 Uma experiência visual inspirada em *Alice no País das Maravilhas*, construída como portfólio criativo com HTML, CSS e JavaScript.
 
-🔗 **Veja ao vivo:** [LINK-AQUI](LINK-AQUI)
+🔗 **Veja ao vivo:** [merit-alice.netlify.app](https://merit-alice.netlify.app)
 
 ---
 
@@ -36,7 +36,7 @@ Dica: use fones de ouvido. 🎧
 | 4 | Sons | ✅ |
 | 5 | A Porta | ✅ |
 | 6 | O Buraco da Fechadura | ✅ |
-| 7 | Deploy | 🔨 em andamento |
+| 7 | Deploy | ✅ |
 
 ---
 

@@ -21,7 +21,7 @@ body {
     position: fixed;     
     inset: 0;             /* Atalho para top, right, bottom, left:0 */
     overflow: hidden;    /* Corta o que sair da tela */
-    perspective: 800px; /* Cria profundidade 3D  para animações */
+    perspective: 800px; /* Cria profundidade 3D para animações */
 }
 
 
@@ -70,7 +70,7 @@ body {
     display: block;
 }
 
-/* Obejtos da queda: Posição horizontal e atraso de cada objeto */
+/* Objetos da queda: Posição horizontal e atraso de cada objeto */
 .objeto-1 { left: 20%; animation-delay: 0.3s; }   /* Aparece 0.3s depois */
 .objeto-2 { left: 35%; animation-delay: 0.6s; }  /* Aparece 0.6s depois */
 .objeto-3 { left: 65%; animation-delay: 0.1s; } /* Aparece 0.1s depois */
@@ -155,7 +155,7 @@ body.estado-fechadura #mensagem-despertar {
 
 }
 
-/* Cena da lanterna: visivél */
+/* Cena da lanterna: visível */
 body.estado-acordada #cena-lanterna {
     opacity: 1;            
     pointer-events: auto;    /* Passa a capturar o mouse */
@@ -297,7 +297,7 @@ body.estado-desmaiada #cena-lanterna {
 
 
 /* RAINHA
-   Texto maior → duas linhas se necessário */
+   Texto maior → duas linhas */
 #obj-prateleira .fala-objeto {
     top: calc(100% + 10px);
     max-width: min(230px, 80vw);
@@ -401,7 +401,7 @@ body.estado-fechadura #dica-avancar {
  
                 /* A PORTA */
 
-/* A porta: começa grande ao fundo (distante) */
+/* A porta: começa pequena e desfocada ao fundo (distante) */
 #porta {
     position: absolute;
     left: 50%;
@@ -548,7 +548,7 @@ body.estado-acordada #porta {
     z-index: 10;
 }
 
-/* tira esse hover dourado que pinta um quadrado em cima da sua art-porta */
+/* tira esse hover dourado que pinta um quadrado em cima da art-porta */
 #porta-machaneta:hover {
     box-shadow: 0 0 20px rgba(200, 160, 80, 0.9);
     background: transparent; /* mantém invisível */
@@ -580,11 +580,11 @@ body.estado-fechadura #cena-fechadura {
     pointer-events: auto;
 }
 
-/* Interior da fechadura: Pais das maravilhas */
+/* Interior da fechadura: Pais das Maravilhas */
 #fechadura-interior {
     position: absolute;
-    width: 157px; /* era 90px - agora gigante */
-    height: 239px; /* era 130px */
+    width: 157px; 
+    height: 239px; 
     display: flex;
     align-items: center;
     justify-content: center;
@@ -666,14 +666,13 @@ body.estado-fechadura #btn-mute {
     pointer-events: auto;
 }
 
-/* Hover: fica mais visivel ao passar o volume */
+/* Hover: fica mais visivel ao passar o mouse */
 #btn-mute:hover {
     opacity: 1;
 }
 
-
-
 /* ==================== AJUSTES PARA MOBILE ==================== */
+
 @media (max-width: 600px) {
 
     .objeto-ambiente:not(#porta) img {
@@ -738,14 +737,16 @@ body.estado-fechadura #btn-mute {
     }
 
     #dica-clicar {
-    white-space: normal !important;
-    width: 30vw;
-    text-align: center;
-    font-size: 0.8rem !important;
-}
+        white-space: normal !important;
+        width: 38vw;
+        text-align: center;
+        font-size: 0.75rem !important;
+        line-height: 1.3;
+    }
 }
 
 /* ==================== MOBILE LANDSCAPE ==================== */
+
 @media (max-height: 500px), (max-width: 900px) and (orientation: landscape) {
 
     /* Reduz o tamanho das artes */
@@ -780,7 +781,7 @@ body.estado-fechadura #btn-mute {
         max-width: min(140px, 60vw) !important;
     }
 
-    /* Cogumelo — usa o valor que você já calibrizou (-25px) */
+    /* Cogumelo — usa o valor que calibrou (-25px) */
     #obj-cogumelo .fala-objeto {
         bottom: calc(100% - 25px) !important;
     }

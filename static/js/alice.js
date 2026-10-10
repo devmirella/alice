@@ -29,7 +29,7 @@ function mudarEstado(novoEstado) {
 
     document.body.classList.add("estado-" + novoEstado);
 
-    console.log("Estado mudou para:", novoEstado); // Ajuda a deburgar no console
+    console.log("Estado mudou para:", novoEstado); // Ajuda a depurar no console
 
 }
           
@@ -191,7 +191,7 @@ document.addEventListener("touchstart", function(e) {
 
 function atualizarCaminhada() {
 
-    // Porta encolhe conforme Alice avança (magia do País das Maravilhas)
+    // Porta cresce conforme Alice avança
     const escalaPorta = ESCALA_PORTA_LONGE - (ESCALA_PORTA_LONGE - ESCALA_PORTA_PERTO) * progresso;
 
     // Porta desce levemente na tela conforme Alice se aproxima
@@ -221,7 +221,7 @@ function atualizarCaminhada() {
     }
 }
 
-// Avança Alice um passo em direção à porta (porta encolhe, Alice não se move)
+// Avança Alice um passo em direção à porta (a porta cresce, Alice não se move)
 function darPasso() {
     if (estado !== "acordada") return;
     if (avanco >= 1) return;
@@ -234,7 +234,7 @@ function darPasso() {
     if (dica) dica.classList.add("escondida");
 }
 
-// Desktop: seta para cima faz a porta encolher
+// Desktop: seta para cima aproxima a porta
 document.addEventListener("keydown", function(e) {
     if (e.key == "ArrowUp") {
         e.preventDefault();
@@ -242,7 +242,7 @@ document.addEventListener("keydown", function(e) {
     }
 });
 
-// Mobile: swipe para cima faz a porta encolher
+// Mobile: swipe para cima aproxima a porta
 let swipeStartY = null;
 let swipeStartX = null;
 let swipeStartTime = null;
@@ -326,7 +326,7 @@ document.addEventListener("mousemove", function(e) {
     const dx = (e.clientX - cx) / cx;
     const dy = (e.clientY - cy) / cy;
 
-    // Move o interior na direção oposta ao mouse, máximo 40px
+    // Move o interior na direção oposta ao mouse, máximo 12px
     const mx = -dx * 12;
     const my = -dy * 12;
 
@@ -452,7 +452,7 @@ function criarArrasto() {
     src.start();
 }
 
-// D) VOZES REAIS (SEUS 3 MP3)
+// D) VOZES REAIS
 function tocarVozReal(id, volume = 0.3) {
     const audio = document.getElementById(id);
     if(!audio || mutado) return;
@@ -494,7 +494,7 @@ btnMute.addEventListener("click", function() {
     btnMute.textContent = mutado ? "🔇" : "🔉";
 });
 
-// Interatividade da experiência Alice — por enquanto só um teste
+// Inicialização: posiciona a porta ao carregar a página
 document.addEventListener( "DOMContentLoaded", () => {
     atualizarCaminhada();
     console.log("Alice acordou!");
