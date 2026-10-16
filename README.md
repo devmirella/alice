@@ -4,6 +4,13 @@ Uma experiência visual inspirada em *Alice no País das Maravilhas*, construíd
 
 🔗 **Veja ao vivo:** [merit-alice.netlify.app](https://merit-alice.netlify.app)
 
+<p align="center">
+  <img src="docs/art-1.png" width="32%" alt="Alice mensagem">
+  <img src="docs/art-2.png" width="32%" alt="A lanterna no escuro">
+  <img src="docs/art-3.png" width="32%" alt="A fechadura">
+</p>
+
+
 ---
 
 ## 🕳️ A experiência
